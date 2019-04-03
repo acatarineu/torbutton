@@ -861,6 +861,22 @@ function torbutton_send_ctrl_cmd(command) {
 function torbutton_new_circuit() {
   let firstPartyDomain = gBrowser.contentPrincipal.originAttributes
                                  .firstPartyDomain;
+  // Bug 22538: For neterror or certerror, get firstPartyDomain causing it from the u param
+  const ABOUT_URI_FIRST_PARTY_DOMAIN = "about.ef2a7dd5-93bc-417f-a698-142c3116864f.mozilla";
+  const isAboutFPD = (firstPartyDomain === ABOUT_URI_FIRST_PARTY_DOMAIN);
+  const knownErrors = ["about:neterror", "about:certerror"];
+  const origin = gBrowser.contentPrincipal.origin || '';
+  if (isAboutFPD && knownErrors.some(x => origin.startsWith(x))) {
+    try {
+      const urlOrigin = new URL(origin);
+      const { hostname } = new URL(urlOrigin.searchParams.get('u'));
+      if (hostname) {
+        firstPartyDomain = Services.eTLD.getBaseDomainFromHost(hostname) || firstPartyDomain;
+      }
+    } catch (e) {
+      torbutton_log(4, "Exception on new circuit" +e);
+    }
+  }
 
   let domainIsolator = Cc["@torproject.org/domain-isolator;1"]
                           .getService(Ci.nsISupports).wrappedJSObject;
