@@ -33,7 +33,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 let { controller } = Cu.import("resource://torbutton/modules/tor-control-port.js", {});
 
 // Utility functions
-let { bindPrefAndInit, observe, getLocale } = Cu.import("resource://torbutton/modules/utils.js", {});
+let { bindPrefAndInit, observe, getLocale, getDomainForBrowser } = Cu.import("resource://torbutton/modules/utils.js", {});
 
 // Make the TorButton logger available.
 let logger = Cc["@torproject.org/torbutton-logger;1"]
@@ -43,13 +43,13 @@ let logger = Cc["@torproject.org/torbutton-logger;1"]
 
 // A mutable map that stores the current nodes for each
 // SOCKS username/password pair.
-let credentialsToNodeDataMap = {},
+let credentialsToNodeDataMap = new Map(),
     // A mutable map that reports `true` for IDs of "mature" circuits
     // (those that have conveyed a stream).
-    knownCircuitIDs = {},
+    knownCircuitIDs = new Map(),
     // A mutable map that records the SOCKS credentials for the
-    // latest channels for each browser.
-    browserToCredentialsMap = new Map();
+    // latest socks usernames (firstPartDomain || "unknown").
+    userToCredentialsMap = new Map();
 
 // __trimQuotes(s)__.
 // Removes quotation marks around a quoted string.
@@ -139,9 +139,9 @@ let collectIsolationData = function (aController, updateUI) {
     "STREAM",
     streamEvent => streamEvent.StreamStatus === "SENTCONNECT",
     async (streamEvent) => {
-      if (!knownCircuitIDs[streamEvent.CircuitID]) {
+      if (!knownCircuitIDs.get(streamEvent.CircuitID)) {
         logger.eclog(3, "streamEvent.CircuitID: " + streamEvent.CircuitID);
-        knownCircuitIDs[streamEvent.CircuitID] = true;
+        knownCircuitIDs.set(streamEvent.CircuitID, true);
         let circuitStatus = await getCircuitStatusByID(aController, streamEvent.CircuitID),
             credentials = circuitStatus ?
                             (trimQuotes(circuitStatus.SOCKS_USERNAME) + "|" +
@@ -149,7 +149,7 @@ let collectIsolationData = function (aController, updateUI) {
                             null;
         if (credentials) {
           let nodeData = await nodeDataForCircuit(aController, circuitStatus);
-          credentialsToNodeDataMap[credentials] = nodeData;
+          credentialsToNodeDataMap.set(credentials, nodeData);
           updateUI();
         }
       }
@@ -183,7 +183,7 @@ let collectBrowserCredentials = function () {
       let proxyInfo = chan.QueryInterface(Ci.nsIProxiedChannel).proxyInfo;
       let browser = browserForChannel(chan);
       if (browser && proxyInfo) {
-          browserToCredentialsMap.set(browser, [proxyInfo.username,
+          userToCredentialsMap.set(proxyInfo.username, [proxyInfo.username,
                                                 proxyInfo.password]);
       }
     } catch (e) {
@@ -264,10 +264,12 @@ let appendHtml = (parent, data) => parent.appendChild(htmlTree(data));
 // Obtains the circuit used by the given browser.
 let currentCircuitData = function (browser) {
   if (browser) {
-    let credentials = browserToCredentialsMap.get(browser);
+    let firstPartyDomain = getDomainForBrowser(browser);
+    let user = firstPartyDomain || "--unknown--";
+    let credentials = userToCredentialsMap.get(user);
     if (credentials) {
       let [SOCKS_username, SOCKS_password] = credentials;
-      let nodeData = credentialsToNodeDataMap[`${SOCKS_username}|${SOCKS_password}`];
+      let nodeData = credentialsToNodeDataMap.get(`${SOCKS_username}|${SOCKS_password}`);
       let domain = SOCKS_username;
       return { domain, nodeData };
     }
