@@ -12,18 +12,14 @@
  *
  *************************************************************************/
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cr = Components.results;
-const Cu = Components.utils;
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "FileUtils",
                                   "resource://gre/modules/FileUtils.jsm");
 
-Cu.import("resource://torbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
-let NoScriptControl = Cu.import("resource://torbutton/modules/noscript-control.js", {});
+ChromeUtils.import("resource://torbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
+let NoScriptControl = ChromeUtils.import("resource://torbutton/modules/noscript-control.js", {});
 
 // Module specific constants
 const kMODULE_NAME = "Startup";
@@ -65,9 +61,7 @@ function StartupObserver() {
 
     // Arrange for our about:tor handler to be loaded in the default (chrome)
     // process as well as in each content process.
-    let ppmm = Cc["@mozilla.org/parentprocessmessagemanager;1"]
-                 .getService(Ci.nsIProcessScriptLoader);
-    ppmm.loadProcessScript("resource://torbutton/components/aboutTor.js",
+    Services.ppmm.loadProcessScript("resource://torbutton/components/aboutTor.js",
                             true);
 }
 
@@ -165,15 +159,7 @@ StartupObserver.prototype = {
       Services.prefs.savePrefFile(null);
     },
 
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsISupports)) {
-        return this;
-    }
-    if(iid.equals(Ci.nsIClassInfo)) {
-      return this;
-    }
-    return this;
-  },
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIClassInfo]),
 
   // method of nsIClassInfo
   classDescription: "Torbutton Startup Observer",
@@ -182,14 +168,6 @@ StartupObserver.prototype = {
 
   // Hack to get us registered early to observe recovery
   _xpcom_categories: [{category:"profile-after-change"}],
-
-  getInterfaces: function(count) {
-    var interfaceList = [nsIClassInfo];
-    count.value = interfaceList.length;
-    return interfaceList;
-  },
-  getHelperForLanguage: function(count) { return null; }
-
 };
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([StartupObserver]);
