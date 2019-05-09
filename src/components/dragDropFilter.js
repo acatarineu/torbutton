@@ -1,17 +1,15 @@
-/*************************************************************************
+/** ***********************************************************************
  * Drag and Drop Handler.
  *
  * Implements an observer that filters drag events to prevent OS
  * access to URLs (a potential proxy bypass vector).
  *************************************************************************/
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
 
-Cu.import("resource://torbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
+ChromeUtils.import("resource://torbutton/modules/default-prefs.js", {}).ensureDefaultPrefs();
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Module specific constants
 const kMODULE_NAME = "Torbutton Drag and Drop Handler";
@@ -26,17 +24,15 @@ function DragDropFilter() {
   this.logger.log(3, "Component Load 0: New DragDropFilter.");
 
   try {
-    var observerService = Cc["@mozilla.org/observer-service;1"].
-        getService(Ci.nsIObserverService);
-    observerService.addObserver(this, "on-datatransfer-available", false);
-  } catch(e) {
+    Services.obs.addObserver(this, "on-datatransfer-available");
+  } catch (e) {
     this.logger.log(5, "Failed to register drag observer");
   }
 }
 
 DragDropFilter.prototype =
 {
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIObserver]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsISupports, Ci.nsIObserver]),
 
   // make this an nsIClassInfo object
   flags: Ci.nsIClassInfo.DOM_OBJECT,
@@ -45,23 +41,24 @@ DragDropFilter.prototype =
   classID: kMODULE_CID,
 
   // method of nsIClassInfo
-  getInterfaces: function(count) {
+  getInterfaces(count) {
     count.value = kInterfaces.length;
     return kInterfaces;
   },
 
   // method of nsIClassInfo
-  getHelperForLanguage: function(count) { return null; },
+  getHelperForLanguage(count) { return null; },
 
   // method of nsIObserver
-  observe: function(subject, topic, data) {
+  observe(subject, topic, data) {
     if (topic == "on-datatransfer-available") {
       this.logger.log(3, "The DataTransfer is available");
       return this.filterDataTransferURLs(subject);
     }
+    return undefined;
   },
 
-  filterDataTransferURLs: function(aDataTransfer) {
+  filterDataTransferURLs(aDataTransfer) {
     var types = null;
     var type = "";
     var count = aDataTransfer.mozItemCount;
@@ -82,7 +79,7 @@ DragDropFilter.prototype =
         }
       }
     }
-  }
+  },
 };
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([DragDropFilter]);

@@ -1,15 +1,15 @@
 let loaded = false;
 
-function ensureDefaultPrefs () {
+function ensureDefaultPrefs() {
   if (loaded) {
     return;
   }
-  Components.utils.import("resource://gre/modules/Services.jsm");
+  const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
   const kDefaultPreferences = "resource://torbutton/defaults/preferences/preferences.js";
   const defaultPrefBranch = Services.prefs.getDefaultBranch(null);
 
   const context = {
-    pref: function (aPrefName, aValue) {
+    pref(aPrefName, aValue) {
       const aValueType = typeof aValue;
       if (aValueType === "boolean") {
         defaultPrefBranch.setBoolPref(aPrefName, aValue);
@@ -27,7 +27,7 @@ function ensureDefaultPrefs () {
           (Services.appinfo.OS === "Android")) {
         defaultPrefBranch.setBoolPref(aPrefName, false);
       }
-    }
+    },
   };
   Services.scriptloader.loadSubScript(kDefaultPreferences, context);
   loaded = true;

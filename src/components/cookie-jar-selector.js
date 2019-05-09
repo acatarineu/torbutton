@@ -2,7 +2,7 @@
 // user-selected cookies from deletion. Moreover, all the E4X code is
 // deprecated and needs to be replaced with JSON.
 
-/*************************************************************************
+/** ***********************************************************************
  * Cookie Jar Selector (JavaScript XPCOM component)
  * Enables selection of separate cookie jars for (more) anonymous browsing.
  * Designed as a component of FoxTor, http://cups.cs.cmu.edu/foxtor/
@@ -18,15 +18,14 @@ const kMODULE_NAME = "Cookie Jar Selector";
 const kMODULE_CONTRACTID = "@torproject.org/cookie-jar-selector;1";
 const kMODULE_CID = Components.ID("e6204253-b690-4159-bfe8-d4eedab6b3be");
 
-const Cr = Components.results;
-const Cu = Components.utils;
-
-Cu.import("resource://torbutton/modules/default-prefs.js", {})
+ChromeUtils.import("resource://torbutton/modules/default-prefs.js", {})
   .ensureDefaultPrefs();
 
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+
 // XXX: Must match the definition in torcookie.js :/
-function Cookie(number,name,value,isDomain,host,rawHost,HttpOnly,path,isSecure,isSession,
-                expires,isProtected) {
+function Cookie(number, name, value, isDomain, host, rawHost, HttpOnly, path, isSecure, isSession,
+                expires, isProtected) {
   this.number = number;
   this.name = name;
   this.value = value;
@@ -42,80 +41,71 @@ function Cookie(number,name,value,isDomain,host,rawHost,HttpOnly,path,isSecure,i
 }
 
 function CookieJarSelector() {
-  var Cc = Components.classes;
-  var Ci = Components.interfaces;
+  this.logger = Cc["@torproject.org/torbutton-logger;1"]
+      .getService(Ci.nsISupports).wrappedJSObject;
 
-  this.logger = Components.classes["@torproject.org/torbutton-logger;1"]
-      .getService(Components.interfaces.nsISupports).wrappedJSObject;
+  this.logger.log(3, "Component Load 5: New CookieJarSelector " + kMODULE_CONTRACTID);
 
-  this.logger.log(3, "Component Load 5: New CookieJarSelector "+kMODULE_CONTRACTID);
-
-  this.prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+  this.prefs = Services.prefs;
 
   var getProfileFile = function(filename) {
-    var loc = "ProfD";  // profile directory
-    var file = 
-      Cc["@mozilla.org/file/directory_service;1"]
-      .getService(Ci.nsIProperties)
+    var loc = "ProfD"; // profile directory
+    var file = Services.dirsvc
       .get(loc, Ci.nsIFile)
       .clone();
-    file.append(filename); 
+    file.append(filename);
     return file;
   };
 
-  var copyProfileFile = function(src, dest) {
-    var srcfile = getProfileFile(src);    
-    var destfile = getProfileFile(dest);
-    if (srcfile.exists()) {
-      // XXX: Permissions issue with Vista roaming profiles? 
-      // Maybe file locking?
-      try {
-          if (destfile.exists()) {
-              destfile.remove(false);
-          }
-      } catch(e) {
-          this.logger.log(4, "Cookie file deletion exception: "+e);
-      }
-      try {
-          srcfile.copyTo(null, dest);
-      } catch(e) {
-          this.logger.log(5, "Cookie file copy exception: "+e);
-      }
-    }
-  };
+  // var copyProfileFile = function(src, dest) {
+  //   var srcfile = getProfileFile(src);
+  //   var destfile = getProfileFile(dest);
+  //   if (srcfile.exists()) {
+  //     // XXX: Permissions issue with Vista roaming profiles?
+  //     // Maybe file locking?
+  //     try {
+  //         if (destfile.exists()) {
+  //             destfile.remove(false);
+  //         }
+  //     } catch (e) {
+  //         this.logger.log(4, "Cookie file deletion exception: " + e);
+  //     }
+  //     try {
+  //         srcfile.copyTo(null, dest);
+  //     } catch (e) {
+  //         this.logger.log(5, "Cookie file copy exception: " + e);
+  //     }
+  //   }
+  // };
 
-  var moveProfileFile = function(src, dest) { // FIXME: Why does this not work?
-    var srcfile = getProfileFile(src);    
-    var destfile = getProfileFile(dest);
-    if (srcfile.exists()) {
-      if (destfile.exists()) {
-        destfile.remove(false);
-      }
-      srcfile.moveTo(null, dest);
-    }
-  };
+  // var moveProfileFile = function(src, dest) { // FIXME: Why does this not work?
+  //   var srcfile = getProfileFile(src);
+  //   var destfile = getProfileFile(dest);
+  //   if (srcfile.exists()) {
+  //     if (destfile.exists()) {
+  //       destfile.remove(false);
+  //     }
+  //     srcfile.moveTo(null, dest);
+  //   }
+  // };
 
   this.clearCookies = function() {
     try {
-        Cc["@mozilla.org/cookiemanager;1"]
-            .getService(Ci.nsICookieManager)
-            .removeAll();
-    } catch(e) {
-        this.logger.log(4, "Cookie clearing exception: "+e);
+        Services.cookies.removeAll();
+    } catch (e) {
+        this.logger.log(4, "Cookie clearing exception: " + e);
     }
   };
 
   this._cookiesToJS = function(getSession) {
-    var cookieManager =
-      Cc["@mozilla.org/cookiemanager;1"]
-      .getService(Ci.nsICookieManager);
+    var cookieManager = Services.cookies;
     var cookiesEnum = cookieManager.enumerator;
     var cookiesAsJS = [];
     var count = 0;
     while (cookiesEnum.hasMoreElements()) {
         var nextCookie = cookiesEnum.getNext().QueryInterface(Ci.nsICookie2);
         var JSCookie = new Cookie(count++, nextCookie.name, nextCookie.value, nextCookie.isDomain, nextCookie.host,
-                   (nextCookie.host.charAt(0)==".") ? nextCookie.host.substring(1,nextCookie.host.length) : nextCookie.host,
+                   (nextCookie.host.charAt(0) == ".") ? nextCookie.host.substring(1, nextCookie.host.length) : nextCookie.host,
                    nextCookie.isHttpOnly, nextCookie.path, nextCookie.isSecure, nextCookie.isSession, nextCookie.expires,
                    false);
         // Save either session or non-session cookies this time around:
@@ -136,7 +126,7 @@ function CookieJarSelector() {
 
         for (var i = 0; i < cookiesAsJS.length; i++) {
             var cookie = cookiesAsJS[i];
-            //this.logger.log(2, "Loading cookie: "+host+":"+cname+" until: "+expiry);
+            // this.logger.log(2, "Loading cookie: "+host+":"+cname+" until: "+expiry);
             cookieManager.add(cookie.host, cookie.path, cookie.name, cookie.value,
                               cookie.isSecure, cookie.isHttpOnly, cookie.isSession,
                               cookie.expires);
@@ -175,7 +165,7 @@ function CookieJarSelector() {
     if (cookie.isSession) {
       // session cookies get fucked up expiry. Give it 1yr if
       // the user wants to save their session cookies
-      cookie.expires = Date.now()/1000 + 365*24*60*60;
+      cookie.expires = Date.now() / 1000 + 365 * 24 * 60 * 60;
     }
 
     cookies.push(cookie);
@@ -190,8 +180,8 @@ function CookieJarSelector() {
         if (file.exists()) {
           file.remove(false);
         }
-      } catch(e) {
-        this.logger.log(5, "Can't remove "+name+" cookie file: "+e);
+      } catch (e) {
+        this.logger.log(5, "Can't remove " + name + " cookie file: " + e);
       }
     }
   };
@@ -207,7 +197,7 @@ function CookieJarSelector() {
       var sstream = Cc["@mozilla.org/scriptableinputstream;1"]
           .createInstance(Ci.nsIScriptableInputStream);
       fstream.init(file, -1, 0, 0);
-      sstream.init(fstream); 
+      sstream.init(fstream);
 
       var str = sstream.read(4096);
       while (str.length > 0) {
@@ -217,15 +207,16 @@ function CookieJarSelector() {
 
       sstream.close();
       fstream.close();
+      var ret;
       try {
-          var ret = JSON.parse(data);
-      } catch(e) { // file has been corrupted; XXX: handle error differently
-          this.logger.log(5, "Cookies corrupted: "+e);
+          ret = JSON.parse(data);
+      } catch (e) { // file has been corrupted; XXX: handle error differently
+          this.logger.log(5, "Cookies corrupted: " + e);
           try {
-              file.remove(false); //XXX: is it necessary to remove it ?
-              var ret = null;
-          } catch(e2) {
-              this.logger.log(5, "Can't remove file "+e);
+              file.remove(false); // XXX: is it necessary to remove it ?
+              ret = null;
+          } catch (e2) {
+              this.logger.log(5, "Can't remove file " + e);
           }
       }
       return ret;
@@ -233,7 +224,7 @@ function CookieJarSelector() {
 
   this.protectCookies = function(cookies) {
     var name = "tor";
-    this._writeProtectCookies(cookies,name);
+    this._writeProtectCookies(cookies, name);
     if (!this.prefs.getBoolPref("browser.privatebrowsing.autostart")) {
       // save protected cookies to file
       this._protectedCookiesToFile(name);
@@ -243,8 +234,8 @@ function CookieJarSelector() {
         if (file.exists()) {
           file.remove(false);
         }
-      } catch(e) {
-        this.logger.log(5, "Can't remove "+name+" cookie file: "+e);
+      } catch (e) {
+        this.logger.log(5, "Can't remove " + name + " cookie file: " + e);
       }
     }
   };
@@ -254,7 +245,7 @@ function CookieJarSelector() {
         if (cookies[i].isSession) {
             // session cookies get fucked up expiry. Give it 1yr if
             // the user wants to save their session cookies
-            cookies[i].expires = Date.now()/1000 + 365*24*60*60;
+            cookies[i].expires = Date.now() / 1000 + 365 * 24 * 60 * 60;
         }
         cookies[i].isProtected = true;
     }
@@ -272,7 +263,7 @@ function CookieJarSelector() {
       var sstream = Cc["@mozilla.org/scriptableinputstream;1"]
           .createInstance(Ci.nsIScriptableInputStream);
       fstream.init(file, -1, 0, 0);
-      sstream.init(fstream); 
+      sstream.init(fstream);
 
       var str = sstream.read(4096);
       while (str.length > 0) {
@@ -282,15 +273,16 @@ function CookieJarSelector() {
 
       sstream.close();
       fstream.close();
+      var ret;
       try {
-          var ret = JSON.parse(data);
-      } catch(e) { // file has been corrupted; XXX: handle error differently
-          this.logger.log(5, "Cookies corrupted: "+e);
+          ret = JSON.parse(data);
+      } catch (e) { // file has been corrupted; XXX: handle error differently
+          this.logger.log(5, "Cookies corrupted: " + e);
           try {
-              file.remove(false); //XXX: is it necessary to remove it ?
-              var ret = null;
-          } catch(e2) {
-              this.logger.log(5, "Can't remove file "+e);
+              file.remove(false); // XXX: is it necessary to remove it ?
+              ret = null;
+          } catch (e2) {
+              this.logger.log(5, "Can't remove file " + e);
           }
       }
       return ret;
@@ -299,12 +291,12 @@ function CookieJarSelector() {
   this.saveCookies = function(name) {
     // transition removes old tor-style cookie file
     try {
-        var oldCookieFile = getProfileFile("cookies-"+name+".xml");
+        var oldCookieFile = getProfileFile("cookies-" + name + ".xml");
         if (oldCookieFile.exists()) {
             oldCookieFile.remove(false);
         }
-    } catch(e) {
-        this.logger.log(5, "Can't remove old "+name+" file "+e);
+    } catch (e) {
+        this.logger.log(5, "Can't remove old " + name + " file " + e);
     }
 
     // save cookies to JS objects
@@ -321,8 +313,8 @@ function CookieJarSelector() {
             if (file.exists()) {
                 file.remove(false);
             }
-        } catch(e) {
-            this.logger.log(5, "Can't remove "+name+" cookie file "+e);
+        } catch (e) {
+            this.logger.log(5, "Can't remove " + name + " cookie file " + e);
         }
     }
 
@@ -336,7 +328,7 @@ function CookieJarSelector() {
       var protCookies = this.getProtectedCookies(name);
       if (protCookies == null || typeof(protCookies) == "undefined"
               || protCookies.length == 0) {
-        //file does not exist - no protected cookies. Clear them all.
+        // file does not exist - no protected cookies. Clear them all.
         this.logger.log(3, "No protected cookies. Clearing all cookies.");
         this.clearCookies();
         return;
@@ -346,14 +338,13 @@ function CookieJarSelector() {
         .getService(Ci.nsICookieManager2);
 
       var enumerator = cookiemanager.enumerator;
-      var count = 0;
       var protcookie = false;
 
       while (enumerator.hasMoreElements()) {
         var nextCookie = enumerator.getNext();
         if (!nextCookie) break;
 
-        nextCookie = nextCookie.QueryInterface(Components.interfaces.nsICookie);
+        nextCookie = nextCookie.QueryInterface(Ci.nsICookie);
         for (var i = 0; i < protCookies.length; i++) {
           protcookie = protcookie || (nextCookie.host == protCookies[i].host &&
                                       nextCookie.name == protCookies[i].name &&
@@ -365,13 +356,13 @@ function CookieJarSelector() {
                              nextCookie.name,
                              nextCookie.path, false);
         } else {
-          this.logger.log(3, "Found protected cookie for "+nextCookie.host);
+          this.logger.log(3, "Found protected cookie for " + nextCookie.host);
         }
         protcookie = false;
       }
       // Emit cookie-changed event. This instructs other components to clear their identifiers
       // (Specifically DOM storage and safe browsing, but possibly others)
-      var obsSvc = Components.classes["@mozilla.org/observer-service;1"].getService(nsIObserverService);
+      var obsSvc = Cc["@mozilla.org/observer-service;1"].getService(nsIObserverService);
       obsSvc.notifyObservers(this, "cookie-changed", "cleared");
     } catch (e) {
       this.logger.log(5, "Error deleting unprotected cookies: " + e);
@@ -388,20 +379,20 @@ function CookieJarSelector() {
         this["cookiesobj-" + name] = this._cookiesFromFile(name);
     }
 
-    //delete file if needed
-    if (deleteSavedCookieJar) { 
+    // delete file if needed
+    if (deleteSavedCookieJar) {
         try {
             var file = getProfileFile("cookies-" + name + ".json");
             if (file.exists())
                 file.remove(false);
-        } catch(e) {
-            this.logger.log(5, "Can't remove saved "+name+" file "+e);
+        } catch (e) {
+            this.logger.log(5, "Can't remove saved " + name + " file " + e);
         }
     }
 
     // load cookies from JS objects
-    this._loadCookiesFromJS(this["cookiesobj-"+name]);
-    this._loadCookiesFromJS(this["session-cookiesobj-"+name]);
+    this._loadCookiesFromJS(this["cookiesobj-" + name]);
+    this._loadCookiesFromJS(this["session-cookiesobj-" + name]);
 
     // XXX: send a profile-do-change event?
 
@@ -410,10 +401,8 @@ function CookieJarSelector() {
   };
 
   // Check firefox version to know filename
-  var appInfo = Components.classes["@mozilla.org/xre/app-info;1"]
-      .getService(Components.interfaces.nsIXULAppInfo);
-  var versionChecker = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
-      .getService(Components.interfaces.nsIVersionComparator);
+  // var appInfo = Services.appinfo;
+  // var versionChecker = Services.vc;
 
   // This JSObject is exported directly to chrome
   this.wrappedJSObject = this;
@@ -424,18 +413,11 @@ function CookieJarSelector() {
   this.timerCallback = {
     cookie_changed: false,
 
-    QueryInterface: function(iid) {
-       if (!iid.equals(Component.interfaces.nsISupports) &&
-           !iid.equals(Component.interfaces.nsITimer)) {
-         Components.returnCode = Cr.NS_ERROR_NO_INTERFACE;
-         return null;
-       }
-       return this;
-    },
-    notify: function() {
+    QueryInterface: ChromeUtils.generateQI(["nsITimer"]),
+    notify() {
        // this refers to timerCallback object. use jarThis to reference
        // CookieJarSelector object.
-       if(!this.cookie_changed) {
+       if (!this.cookie_changed) {
            jarThis.logger.log(2, "Got timer update, but no cookie change.");
            return;
        }
@@ -445,70 +427,59 @@ function CookieJarSelector() {
 
        jarThis.saveCookies("tor");
        jarThis.logger.log(2, "Timer done. Cookies saved");
-    }
+    },
   };
-
 }
 
-const nsISupports = Components.interfaces.nsISupports;
-const nsIClassInfo = Components.interfaces.nsIClassInfo;
-const nsIObserver = Components.interfaces.nsIObserver;
-const nsITimer = Components.interfaces.nsITimer;
-const nsIComponentRegistrar = Components.interfaces.nsIComponentRegistrar;
-const nsIObserverService = Components.interfaces.nsIObserverService;
-const nsICategoryManager = Components.interfaces.nsICategoryManager;
+const nsISupports = Ci.nsISupports;
+const nsIClassInfo = Ci.nsIClassInfo;
+const nsIObserver = Ci.nsIObserver;
+const nsITimer = Ci.nsITimer;
+const nsIComponentRegistrar = Ci.nsIComponentRegistrar;
+const nsIObserverService = Ci.nsIObserverService;
+const nsICategoryManager = Ci.nsICategoryManager;
 
 // Start1506: You may or may not care about this:
 CookieJarSelector.prototype =
 {
-  QueryInterface: function(iid)
-  {
-    if (!iid.equals(nsIClassInfo) &&
-        !iid.equals(nsIObserver) &&
-        !iid.equals(nsISupports)) {
-      Components.returnCode = Cr.NS_ERROR_NO_INTERFACE;
-      return null;
-    }
-    return this;
-  },
+  QueryInterface: ChromeUtils.generateQI(["nsIClassInfo", "nsIObserver"]),
 
   wrappedJSObject: null,  // Initialized by constructor
 
   // make this an nsIClassInfo object
   flags: nsIClassInfo.DOM_OBJECT,
 
-  _xpcom_categories: [{category:"profile-after-change"}],
+  _xpcom_categories: [{category: "profile-after-change"}],
   classID: kMODULE_CID,
   contractID: kMODULE_CONTRACTID,
   classDescription: "CookieJarSelector",
 
   // method of nsIClassInfo
-  getInterfaces: function(count) {
+  getInterfaces(count) {
     var interfaceList = [nsIClassInfo];
     count.value = interfaceList.length;
     return interfaceList;
   },
 
   // method of nsIClassInfo
-  getHelperForLanguage: function(count) { return null; },
+  getHelperForLanguage(count) { return null; },
 
   // method of nsIObserver
-  observe : function(aSubject, aTopic, aData) {
-       switch(aTopic) { 
+  observe(aSubject, aTopic, aData) {
+       switch (aTopic) {
         case "cookie-changed":
-            var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);          
+            var prefs = Services.prefs;
             this.timerCallback.cookie_changed = true;
-    
+
             if (aData == "added"
                 && prefs.getBoolPref("extensions.torbutton.cookie_auto_protect")
-                && !prefs.getBoolPref("extensions.torbutton.tor_memory_jar"))
-            {
-              this.addProtectedCookie(aSubject.QueryInterface(Components.interfaces.nsICookie2));//protect the new cookie!    
+                && !prefs.getBoolPref("extensions.torbutton.tor_memory_jar")) {
+              this.addProtectedCookie(aSubject.QueryInterface(Ci.nsICookie2));// protect the new cookie!
             }
             break;
         case "profile-after-change":
-            var obsSvc = Components.classes["@mozilla.org/observer-service;1"].getService(nsIObserverService);
-            obsSvc.addObserver(this, "cookie-changed", false);
+            var obsSvc = Cc["@mozilla.org/observer-service;1"].getService(nsIObserverService);
+            obsSvc.addObserver(this, "cookie-changed");
             // after profil loading, initialize a timer to call timerCallback
             // at a specified interval
             this.timer.initWithCallback(this.timerCallback, 60 * 1000, nsITimer.TYPE_REPEATING_SLACK); // 1 minute
@@ -517,15 +488,15 @@ CookieJarSelector.prototype =
        }
   },
 
-  timer:  Components.classes["@mozilla.org/timer;1"].createInstance(nsITimer),
+  timer:  Cc["@mozilla.org/timer;1"].createInstance(nsITimer),
 
-}
+};
 
 /**
 * XPCOMUtils.generateNSGetFactory was introduced in Mozilla 2 (Firefox 4).
 * XPCOMUtils.generateNSGetModule is for Mozilla 1.9.2 (Firefox 3.6).
 */
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 if (XPCOMUtils.generateNSGetFactory)
     var NSGetFactory = XPCOMUtils.generateNSGetFactory([CookieJarSelector]);
 else

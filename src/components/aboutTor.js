@@ -1,4 +1,4 @@
-/*************************************************************************
+/** ***********************************************************************
  * Copyright (c) 2017, The Tor Project, Inc.
  * See LICENSE for licensing information.
  *
@@ -14,20 +14,15 @@ const kMODULE_CID = Components.ID("84d47da6-79c3-4661-aa9f-8049476f7bf5");
 
 const kAboutTorURL = "chrome://torbutton/content/aboutTor/aboutTor.xhtml";
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-function AboutTor()
-{
-}
+function AboutTor() {}
 
 
 AboutTor.prototype =
 {
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIAboutModule]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIAboutModule]),
 
   // nsIClassInfo implementation:
   classDescription: kMODULE_NAME,
@@ -35,23 +30,20 @@ AboutTor.prototype =
   contractID: kMODULE_CONTRACTID,
 
   // nsIAboutModule implementation:
-  newChannel: function(aURI, aLoadInfo)
-  {
-    let ioSvc = Cc["@mozilla.org/network/io-service;1"]
-                  .getService(Ci.nsIIOService);
-    let uri = ioSvc.newURI(kAboutTorURL, null, null);
+  newChannel(aURI, aLoadInfo) {
+    let ioSvc = Services.io;
+    let uri = ioSvc.newURI(kAboutTorURL);
     let channel = ioSvc.newChannelFromURIWithLoadInfo(uri, aLoadInfo);
     channel.originalURI = aURI;
 
     return channel;
   },
 
-  getURIFlags: function(aURI)
-  {
+  getURIFlags(aURI) {
     return Ci.nsIAboutModule.URI_SAFE_FOR_UNTRUSTED_CONTENT |
            Ci.nsIAboutModule.URI_MUST_LOAD_IN_CHILD |
            Ci.nsIAboutModule.ALLOW_SCRIPT;
-  }
+  },
 };
 
 

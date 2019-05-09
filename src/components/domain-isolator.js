@@ -6,21 +6,19 @@
 // call earlier functions). The code file can be processed
 // with docco.js to provide clear documentation.
 
-/* jshint esversion: 6 */
-/* global Components, console, XPCOMUtils */
-
 // ### Abbreviations
-const Cc = Components.classes, Ci = Components.interfaces, Cu = Components.utils;
+
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Make the logger available.
 let logger = Cc["@torproject.org/torbutton-logger;1"]
-               .getService(Components.interfaces.nsISupports).wrappedJSObject;
+               .getService(Ci.nsISupports).wrappedJSObject;
 
-let { ensureDefaultPrefs } = Cu.import("resource://torbutton/modules/default-prefs.js", {});
+let { ensureDefaultPrefs } = ChromeUtils.import("resource://torbutton/modules/default-prefs.js", {});
 ensureDefaultPrefs();
 
 // Import Services object
-Cu.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Import crypto object (FF 37+).
 Cu.importGlobalProperties(["crypto"]);
@@ -41,11 +39,11 @@ mozilla.protocolProxyService = Cc["@mozilla.org/network/protocol-proxy-service;1
 // The filterFunction should expect two arguments, (aChannel, aProxy),
 // where aProxy is the proxy or list of proxies that would be used by default
 // for the given channel, and should return a new Proxy or list of Proxies.
-mozilla.registerProxyChannelFilter = function (filterFunction, positionIndex) {
+mozilla.registerProxyChannelFilter = function(filterFunction, positionIndex) {
   let proxyFilter = {
-    applyFilter : function (aProxyService, aChannel, aProxy, aCallback) {
+    applyFilter(aProxyService, aChannel, aProxy, aCallback) {
       aCallback.onProxyFilterResult(filterFunction(aChannel, aProxy));
-    }
+    },
   };
   mozilla.protocolProxyService.registerChannelFilter(proxyFilter, positionIndex);
 };
@@ -69,7 +67,7 @@ tor.unknownDirtySince = Date.now();
 // Takes a proxyInfo object (originalProxy) and returns a new proxyInfo
 // object with the same properties, except the username is set to the
 // the domain, and the password is a nonce.
-tor.socksProxyCredentials = function (originalProxy, domain) {
+tor.socksProxyCredentials = function(originalProxy, domain) {
   // Check if we already have a nonce. If not, create
   // one for this domain.
   if (!tor.noncesForDomains.hasOwnProperty(domain)) {
@@ -82,6 +80,8 @@ tor.socksProxyCredentials = function (originalProxy, domain) {
                           proxy.port,
                           domain, // username
                           tor.noncesForDomains[domain], // password
+                          "", // aProxyAuthorizationHeader
+                          "", // aConnectionIsolationKey
                           proxy.flags,
                           proxy.failoverTimeout,
                           proxy.failoverProxy);
@@ -117,7 +117,7 @@ tor.newCircuitForDomain = function(domain) {
 // __tor.clearIsolation()_.
 // Clear the isolation state cache, forcing new circuits to be used for all
 // subsequent requests.
-tor.clearIsolation = function () {
+tor.clearIsolation = function() {
   // Per-domain nonces are stored in a map, so simply re-initialize the map.
   tor.noncesForDomains = {};
 
@@ -131,18 +131,17 @@ tor.clearIsolation = function () {
 // to the SOCKS server (the tor client process) with a username (the first party domain)
 // and a nonce password. Tor provides a separate circuit for each username+password
 // combination.
-tor.isolateCircuitsByDomain = function () {
-  mozilla.registerProxyChannelFilter(function (aChannel, aProxy) {
+tor.isolateCircuitsByDomain = function() {
+  mozilla.registerProxyChannelFilter(function(aChannel, aProxy) {
     if (!tor.isolationEnabled) {
       return aProxy;
     }
     try {
       let channel = aChannel.QueryInterface(Ci.nsIChannel),
-          proxy = aProxy.QueryInterface(Ci.nsIProxyInfo),
           firstPartyDomain = channel.loadInfo.originAttributes.firstPartyDomain;
       if (firstPartyDomain === "") {
         firstPartyDomain = "--unknown--";
-        if (Date.now() - tor.unknownDirtySince > 1000*10*60) {
+        if (Date.now() - tor.unknownDirtySince > 1000 * 10 * 60) {
           logger.eclog(3, "tor catchall circuit has been dirty for over 10 minutes. Rotating.");
           tor.newCircuitForDomain("--unknown--");
           tor.unknownDirtySince = Date.now();
@@ -155,6 +154,7 @@ tor.isolateCircuitsByDomain = function () {
     } catch (e) {
       logger.eclog(4, `tor domain isolator error: ${e.message}`);
     }
+    return undefined;
   }, 0);
 };
 
@@ -165,7 +165,7 @@ const kMODULE_CONTRACTID = "@torproject.org/domain-isolator;1";
 const kMODULE_CID = Components.ID("e33fd6d4-270f-475f-a96f-ff3140279f68");
 
 // Import XPCOMUtils object.
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 // DomainIsolator object.
 function DomainIsolator() {
@@ -174,11 +174,11 @@ function DomainIsolator() {
 
 // Firefox component requirements
 DomainIsolator.prototype = {
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIObserver]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsISupports, Ci.nsIObserver]),
   classDescription: kMODULE_NAME,
   classID: kMODULE_CID,
   contractID: kMODULE_CONTRACTID,
-  observe: function (subject, topic, data) {
+  observe(subject, topic, data) {
     if (topic === "profile-after-change") {
       logger.eclog(3, "domain isolator: set up isolating circuits by domain");
 
@@ -188,23 +188,23 @@ DomainIsolator.prototype = {
       tor.isolateCircuitsByDomain();
     }
   },
-  newCircuitForDomain: function (domain) {
+  newCircuitForDomain(domain) {
     tor.newCircuitForDomain(domain);
   },
 
-  enableIsolation: function() {
+  enableIsolation() {
     tor.isolationEnabled = true;
   },
 
-  disableIsolation: function() {
+  disableIsolation() {
     tor.isolationEnabled = false;
   },
 
-  clearIsolation: function() {
+  clearIsolation() {
     tor.clearIsolation();
   },
 
-  wrappedJSObject: null
+  wrappedJSObject: null,
 };
 
 // Assign factory to global object.

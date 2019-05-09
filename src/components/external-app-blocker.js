@@ -2,7 +2,7 @@
 // in the event of external app launch. We want it to exist in the desktop
 // port, but it is probably useless for Android.
 
-/*************************************************************************
+/** ***********************************************************************
  * External App Handler.
  * Handles displaying confirmation dialogs for external apps and protocols
  * due to Firefox Bug https://bugzilla.mozilla.org/show_bug.cgi?id=440892
@@ -12,14 +12,9 @@
  * handle an URL (e.g., when the user clicks on a mailto: URL).
  *************************************************************************/
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cr = Components.results;
-const Cu = Components.utils;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/SharedPromptUtils.jsm");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {PromptUtils} = ChromeUtils.import("resource://gre/modules/SharedPromptUtils.jsm");
 
 // Module specific constants
 const kMODULE_NAME = "Torbutton External App Handler";
@@ -38,7 +33,7 @@ ExternalAppBlocker.prototype =
 {
   _helperAppLauncher: undefined,
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIObserver,
+  QueryInterface: ChromeUtils.generateQI([Ci.nsISupports, Ci.nsIObserver,
                                          Ci.nsIHelperAppWarningDialog]),
 
   // make this an nsIClassInfo object
@@ -48,17 +43,16 @@ ExternalAppBlocker.prototype =
   classID: kMODULE_CID,
 
   // method of nsIClassInfo
-  getInterfaces: function(count) {
+  getInterfaces(count) {
     count.value = kInterfaces.length;
     return kInterfaces;
   },
 
   // method of nsIClassInfo
-  getHelperForLanguage: function(count) { return null; },
+  getHelperForLanguage(count) { return null; },
 
   // method of nsIHelperAppWarningDialog
-  maybeShow: function(aLauncher, aWindowContext)
-  {
+  maybeShow(aLauncher, aWindowContext) {
     // Hold a reference to the object that called this component. This is
     // important not just because we need to later invoke the
     // continueRequest() or cancelRequest() callback on aLauncher, but also
@@ -80,7 +74,7 @@ ExternalAppBlocker.prototype =
    * on chrome://global/content/commonDialog.xul as well as some of the code
    * in resource://gre/modules/SharedPromptUtils.jsm.
    */
-  _showPrompt: function(aWindowContext) {
+  _showPrompt(aWindowContext) {
     let parentWin;
     try {
       parentWin = aWindowContext.getInterface(Ci.nsIDOMWindow);
@@ -98,8 +92,8 @@ ExternalAppBlocker.prototype =
 
     let args = {
       promptType:       "confirmEx",
-      title:            title,
-      text:             app+note+suggest+" ",
+      title,
+      text:             app + note + suggest + " ",
       checkLabel:       dontask,
       checked:          false,
       ok:               false,
@@ -130,8 +124,8 @@ ExternalAppBlocker.prototype =
         } else {
           this._helperAppLauncher.cancelRequest(Cr.NS_BINDING_ABORTED);
         }
-      }, false);
-    }, false);
+      });
+    });
   },
 };
 

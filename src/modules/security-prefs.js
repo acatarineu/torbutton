@@ -1,14 +1,14 @@
+/* eslint-disable no-sparse-arrays */
 // # Security Settings prefs (as controlled by the Security Slider)
 
 // ### Utilities
 
-let {classes: Cc, utils: Cu } = Components;
 let { getBoolPref, setBoolPref, getIntPref, setIntPref } =
-    Cu.import("resource://gre/modules/Services.jsm", {}).Services.prefs;
+    ChromeUtils.import("resource://gre/modules/Services.jsm", {}).Services.prefs;
 let { bindPref, bindPrefAndInit } =
-    Cu.import("resource://torbutton/modules/utils.js", {});
-let logger = Components.classes["@torproject.org/torbutton-logger;1"]
-    .getService(Components.interfaces.nsISupports).wrappedJSObject;
+    ChromeUtils.import("resource://torbutton/modules/utils.js", {});
+let logger = Cc["@torproject.org/torbutton-logger;1"]
+    .getService(Ci.nsISupports).wrappedJSObject;
 let log = (level, msg) => logger.log(level, msg);
 
 // ### Constants
@@ -21,13 +21,13 @@ let log = (level, msg) => logger.log(level, msg);
 // (see noscript-control.js).
 const kSecuritySettings = {
   // Preference name :                        [0, 1-high 2-m    3-m    4-low]
-  "javascript.options.ion" :                  [,  false, false, false, true ],
-  "javascript.options.baselinejit" :          [,  false, false, false, true ],
-  "javascript.options.native_regexp" :        [,  false, false, false, true ],
-  "media.webaudio.enabled" :                  [,  false, false, false, true ],
-  "mathml.disabled" :                         [,  true,  true,  true,  false],
-  "gfx.font_rendering.opentype_svg.enabled" : [,  false, false, false, true ],
-  "svg.disabled" :                            [,  true,  false, false, false],
+  "javascript.options.ion":                   [,  false, false, false, true ],
+  "javascript.options.baselinejit":           [,  false, false, false, true ],
+  "javascript.options.native_regexp":         [,  false, false, false, true ],
+  "media.webaudio.enabled":                   [,  false, false, false, true ],
+  "mathml.disabled":                          [,  true,  true,  true,  false],
+  "gfx.font_rendering.opentype_svg.enabled":  [,  false, false, false, true ],
+  "svg.disabled":                             [,  true,  false, false, false],
 };
 
 // The Security Settings prefs in question.
@@ -39,7 +39,7 @@ const kCustomPref = "extensions.torbutton.security_custom";
 // __write_setting_to_prefs(settingIndex)__.
 // Take a given setting index and write the appropriate pref values
 // to the pref database.
-var write_setting_to_prefs = function (settingIndex) {
+var write_setting_to_prefs = function(settingIndex) {
   Object.keys(kSecuritySettings).forEach(
     prefName => setBoolPref(
       prefName, kSecuritySettings[prefName][settingIndex]));
@@ -48,7 +48,7 @@ var write_setting_to_prefs = function (settingIndex) {
 // __read_setting_from_prefs()__.
 // Read the current pref values, and decide if any of our
 // security settings matches. Otherwise return null.
-var read_setting_from_prefs = function () {
+var read_setting_from_prefs = function() {
   let prefNames = Object.keys(kSecuritySettings);
   for (let settingIndex of [1, 2, 3, 4]) {
     let possibleSetting = true;
@@ -73,7 +73,7 @@ var read_setting_from_prefs = function () {
 // Whenever a pref bound to the security slider changes, onSettingChanged
 // is called with the new security setting value (1,2,3,4 or null).
 // Returns a zero-arg function that ends this binding.
-var watch_security_prefs = function (onSettingChanged) {
+var watch_security_prefs = function(onSettingChanged) {
   let prefNames = Object.keys(kSecuritySettings);
   let unbindFuncs = [];
   for (let prefName of prefNames) {
@@ -92,7 +92,7 @@ var initialized = false;
 // Defines the behavior of "extensions.torbutton.security_custom",
 // "extensions.torbutton.security_slider", and the security-sensitive
 // prefs declared in kSecuritySettings.
-var initialize = function () {
+var initialize = function() {
   // Only run once.
   if (initialized) {
     return;
@@ -101,14 +101,14 @@ var initialize = function () {
   initialized = true;
   // When security_custom is set to false, apply security_slider setting
   // to the security-sensitive prefs.
-  bindPrefAndInit(kCustomPref, function (custom) {
+  bindPrefAndInit(kCustomPref, function(custom) {
     if (custom === false) {
       write_setting_to_prefs(getIntPref(kSliderPref));
     }
   });
   // If security_slider is given a new value, then security_custom should
   // be set to false.
-  bindPref(kSliderPref, function (prefIndex) {
+  bindPref(kSliderPref, function(prefIndex) {
     setBoolPref(kCustomPref, false);
     write_setting_to_prefs(prefIndex);
   });

@@ -21,23 +21,21 @@
 // control port with the given ipcFile or host plus port, and password, and
 // binds to a named bool pref whose value determines whether the circuit display
 // is enabled or disabled.
-let createTorCircuitDisplay = (function () {
-
+let createTorCircuitDisplay = (function() {
 "use strict";
 
 // Mozilla utilities
-const { Cu : utils , Ci : interfaces } = Components.utils;
-Cu.import("resource://gre/modules/Services.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // Import the controller code.
-let { controller } = Cu.import("resource://torbutton/modules/tor-control-port.js", {});
+let { controller } = ChromeUtils.import("resource://torbutton/modules/tor-control-port.js", {});
 
 // Utility functions
-let { bindPrefAndInit, observe, getLocale, getDomainForBrowser } = Cu.import("resource://torbutton/modules/utils.js", {});
+let { bindPrefAndInit, observe, getLocale, getDomainForBrowser } = ChromeUtils.import("resource://torbutton/modules/utils.js", {});
 
 // Make the TorButton logger available.
 let logger = Cc["@torproject.org/torbutton-logger;1"]
-               .getService(Components.interfaces.nsISupports).wrappedJSObject;
+               .getService(Ci.nsISupports).wrappedJSObject;
 
 // ## Circuit/stream credentials and node monitoring
 
@@ -58,7 +56,7 @@ let trimQuotes = s => s ? s.match(/^"(.*)"$/)[1] : undefined;
 // __getBridge(id)__.
 // Gets the bridge parameters for a given node ID. If the node
 // is not currently used as a bridge, returns null.
-let getBridge = async function (controller, id) {
+let getBridge = async function(controller, id) {
   let bridges = await controller.getConf("bridge");
   if (bridges) {
     for (let bridge of bridges) {
@@ -74,7 +72,7 @@ let getBridge = async function (controller, id) {
 // Returns the type, IP and country code of a node with given ID.
 // Example: `nodeDataForID(controller, "20BC91DC525C3DC9974B29FBEAB51230DE024C44")`
 // => `{ type : "default", ip : "12.23.34.45", countryCode : "fr" }`
-let nodeDataForID = async function (controller, id) {
+let nodeDataForID = async function(controller, id) {
   let result = {},
       bridge = await getBridge(controller, id); // type, ip, countryCode;
   if (bridge) {
@@ -104,7 +102,7 @@ let nodeDataForID = async function (controller, id) {
 
 // __nodeDataForCircuit(controller, circuitEvent)__.
 // Gets the information for a circuit.
-let nodeDataForCircuit = async function (controller, circuitEvent) {
+let nodeDataForCircuit = async function(controller, circuitEvent) {
   let rawIDs = circuitEvent.circuit.map(circ => circ[0]),
       // Remove the leading '$' if present.
       ids = rawIDs.map(id => id[0] === "$" ? id.substring(1) : id);
@@ -114,7 +112,7 @@ let nodeDataForCircuit = async function (controller, circuitEvent) {
 
 // __getCircuitStatusByID(aController, circuitID)__
 // Returns the circuit status for the circuit with the given ID.
-let getCircuitStatusByID = async function (aController, circuitID) {
+let getCircuitStatusByID = async function(aController, circuitID) {
   let circuitStatuses = await aController.getInfo("circuit-status");
   if (circuitStatuses) {
     for (let circuitStatus of circuitStatuses) {
@@ -134,7 +132,7 @@ let getCircuitStatusByID = async function (aController, circuitID) {
 // We need to update the circuit display immediately after any new node data
 // is received. So the `updateUI` callback will be called at that point.
 // See https://trac.torproject.org/projects/tor/ticket/15493
-let collectIsolationData = function (aController, updateUI) {
+let collectIsolationData = function(aController, updateUI) {
   return aController.watchEvent(
     "STREAM",
     streamEvent => streamEvent.StreamStatus === "SENTCONNECT",
@@ -158,7 +156,7 @@ let collectIsolationData = function (aController, updateUI) {
 
 // __browserForChannel(channel)__.
 // Returns the browser that loaded a given channel.
-let browserForChannel = function (channel) {
+let browserForChannel = function(channel) {
   if (!channel) return null;
   let chan = channel.QueryInterface(Ci.nsIChannel);
   let callbacks = chan.notificationCallbacks;
@@ -177,7 +175,7 @@ let browserForChannel = function (channel) {
 // __collectBrowserCredentials()__.
 // Starts observing http channels. Each channel's proxyInfo
 // username and password is recorded for the channel's browser.
-let collectBrowserCredentials = function () {
+let collectBrowserCredentials = function() {
   return observe("http-on-modify-request", chan => {
     try {
       let proxyInfo = chan.QueryInterface(Ci.nsIProxiedChannel).proxyInfo;
@@ -205,22 +203,17 @@ let torbuttonBundle = Services.strings.createBundle(
 
 // __uiString__.
 // Read the localized strings for this UI.
-let uiString = function (shortName) {
+let uiString = function(shortName) {
   return torbuttonBundle.GetStringFromName("torbutton.circuit_display." + shortName);
 };
-
-// __regionBundle__.
-// A list of localized region (country) names.
-let regionBundle = Services.strings.createBundle(
-                     "chrome://global/locale/regionNames.properties");
 
 // __localizedCountryNameFromCode(countryCode)__.
 // Convert a country code to a localized country name.
 // Example: `'de'` -> `'Deutschland'` in German locale.
-let localizedCountryNameFromCode = function (countryCode) {
+let localizedCountryNameFromCode = function(countryCode) {
   if (!countryCode) return uiString("unknown_country");
   try {
-    return regionBundle.GetStringFromName(countryCode.toLowerCase());
+    return Services.intl.getRegionDisplayNames(undefined, [countryCode])[0];
   } catch (e) {
     return countryCode.toUpperCase();
   }
@@ -228,9 +221,9 @@ let localizedCountryNameFromCode = function (countryCode) {
 
 // __showCircuitDisplay(show)__.
 // If show === true, makes the circuit display visible.
-let showCircuitDisplay = function (show) {
+let showCircuitDisplay = function(show) {
   document.getElementById("circuit-display-container").style.display = show ?
-							    'block' : 'none';
+    "block" : "none";
 };
 
 // __xmlTree(ns, data)__.
@@ -238,7 +231,7 @@ let showCircuitDisplay = function (show) {
 // data structure representing xml elements like
 // [tag, { attr-key: attr-value }, ...xml-children]
 // and returns nested xml element objects.
-let xmlTree = function xmlTree (ns, data) {
+let xmlTree = function xmlTree(ns, data) {
   let [type, attrs, ...children] = data;
   let element = document.createElementNS(ns, type);
   for (let [key, val] of Object.entries(attrs)) {
@@ -266,7 +259,7 @@ let appendHtml = (parent, data) => parent.appendChild(htmlTree(data));
 
 // __circuitCircuitData()__.
 // Obtains the circuit used by the given browser.
-let currentCircuitData = function (browser) {
+let currentCircuitData = function(browser) {
   if (browser) {
     let firstPartyDomain = getDomainForBrowser(browser);
     let domain = firstPartyDomain || "--unknown--";
@@ -285,7 +278,7 @@ let currentCircuitData = function (browser) {
 // __updateCircuitDisplay()__.
 // Updates the Tor circuit display, showing the current domain
 // and the relay nodes for that domain.
-let updateCircuitDisplay = function () {
+let updateCircuitDisplay = function() {
   let { domain, nodeData } = currentCircuitData(gBrowser.selectedBrowser);
   if (domain && nodeData) {
     // Update the displayed information for the relay nodes.
@@ -328,12 +321,12 @@ let updateCircuitDisplay = function () {
 // can be loaded while the popup menu is open.
 // Update the display if this happens.
 let syncDisplayWithSelectedTab = (function() {
-  let listener = { onLocationChange : function (aBrowser) {
+  let listener = { onLocationChange(aBrowser) {
                       if (aBrowser === gBrowser.selectedBrowser) {
                         updateCircuitDisplay();
                       }
                     } };
-  return function (syncOn) {
+  return function(syncOn) {
     let popupMenu = document.getElementById("identity-popup");
     if (syncOn) {
       // Update the circuit display just before the popup menu is shown.
@@ -353,7 +346,7 @@ let syncDisplayWithSelectedTab = (function() {
 
 // __setupGuardNote()__.
 // Call once to show the Guard note as intended.
-let setupGuardNote = function () {
+let setupGuardNote = function() {
   let guardNote = document.getElementById("circuit-guard-note-container");
   let guardNoteString = uiString("guard_note");
   let learnMoreString = uiString("learn_more");
@@ -363,14 +356,14 @@ let setupGuardNote = function () {
              ["div", {},
               noteBefore, ["span", {class: "circuit-guard-name"}, name],
               noteAfter, " ",
-              ["span", {onclick: `gBrowser.selectedTab = gBrowser.addTab('https://support.torproject.org/${localeCode}/tbb/tbb-2/');`,
+              ["span", {onclick: `gBrowser.selectedTab = gBrowser.addTab('https://support.torproject.org/${localeCode}/tbb/tbb-2/', {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal()});`,
                         class: "circuit-link"},
                learnMoreString]]);
 };
 
 // __ensureCorrectPopupDimensions()__.
 // Make sure the identity popup always displays with the correct height.
-let ensureCorrectPopupDimensions = function () {
+let ensureCorrectPopupDimensions = function() {
   let setDimensions = () => {
     setTimeout(() => {
       let view = document.querySelector("#identity-popup-multiView .panel-viewcontainer");
@@ -412,7 +405,7 @@ let ensureCorrectPopupDimensions = function () {
 // Once called, the Tor circuit display will be started whenever
 // the "enablePref" is set to true, and stopped when it is set to false.
 // A reference to this function (called createTorCircuitDisplay) is exported as a global.
-let setupDisplay = function (ipcFile, host, port, password, enablePrefName) {
+let setupDisplay = function(ipcFile, host, port, password, enablePrefName) {
   setupGuardNote();
   let myController = null,
       stopCollectingIsolationData = null,
@@ -422,7 +415,7 @@ let setupDisplay = function (ipcFile, host, port, password, enablePrefName) {
         syncDisplayWithSelectedTab(false);
         if (myController) {
           if (stopCollectingIsolationData) {
-	    stopCollectingIsolationData();
+            stopCollectingIsolationData();
           }
           if (stopCollectingBrowserCredentials) {
             stopCollectingBrowserCredentials();
@@ -433,10 +426,10 @@ let setupDisplay = function (ipcFile, host, port, password, enablePrefName) {
           myController = null;
         }
       },
-      start = function () {
+      start = function() {
         if (!myController) {
           myController = controller(ipcFile, host, port || 9151, password,
-                function (err) {
+                function(err) {
             // An error has occurred.
             logger.eclog(5, err);
             logger.eclog(5, "Disabling tor display circuit because of an error.");
@@ -452,7 +445,7 @@ let setupDisplay = function (ipcFile, host, port, password, enablePrefName) {
   try {
     let unbindPref = bindPrefAndInit(enablePrefName, on => { if (on) start(); else stop(); });
     // When this chrome window is unloaded, we need to unbind the pref.
-    window.addEventListener("unload", function () {
+    window.addEventListener("unload", function() {
       unbindPref();
       stop();
     });

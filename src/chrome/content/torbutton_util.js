@@ -3,8 +3,9 @@
 // code directly. I don't see any of them as essential for 1506,
 // really.
 
-var m_tb_torlog = Components.classes["@torproject.org/torbutton-logger;1"]
-.getService(Components.interfaces.nsISupports).wrappedJSObject;
+// let { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
+var m_tb_torlog = Cc["@torproject.org/torbutton-logger;1"]
+.getService(Ci.nsISupports).wrappedJSObject;
 
 var m_tb_string_bundle = torbutton_get_stringbundle();
 
@@ -16,9 +17,9 @@ function torbutton_safelog(nLevel, sMsg, scrub) {
 function torbutton_log(nLevel, sMsg) {
     m_tb_torlog.log(nLevel, sMsg);
 
-    // So we can use it in boolean expressions to determine where the 
+    // So we can use it in boolean expressions to determine where the
     // short-circuit is..
-    return true; 
+    return true;
 }
 
 // get a preferences branch object
@@ -28,17 +29,14 @@ function torbutton_get_prefbranch(branch_name) {
     var o_branch = false;
 
     torbutton_log(1, "called get_prefbranch()");
-    o_prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                        .getService(Components.interfaces.nsIPrefService);
-    if (!o_prefs)
-    {
+    o_prefs = Services.prefs;
+    if (!o_prefs) {
         torbutton_log(5, "Failed to get preferences-service!");
         return false;
     }
 
     o_branch = o_prefs.getBranch(branch_name);
-    if (!o_branch)
-    {
+    if (!o_branch) {
         torbutton_log(5, "Failed to get prefs branch!");
         return false;
     }
@@ -47,36 +45,32 @@ function torbutton_get_prefbranch(branch_name) {
 }
 
 // load localization strings
-function torbutton_get_stringbundle()
-{
+function torbutton_get_stringbundle() {
     var o_stringbundle = false;
 
     try {
-        var oBundle = Components.classes["@mozilla.org/intl/stringbundle;1"]
-                                .getService(Components.interfaces.nsIStringBundleService);
+        var oBundle = Services.strings;
         o_stringbundle = oBundle.createBundle("chrome://torbutton/locale/torbutton.properties");
-    } catch(err) {
+    } catch (err) {
         o_stringbundle = false;
     }
     if (!o_stringbundle) {
-        torbutton_log(5, 'ERROR (init): failed to find torbutton-bundle');
+        torbutton_log(5, "ERROR (init): failed to find torbutton-bundle");
     }
 
     return o_stringbundle;
 }
 
-function torbutton_get_property_string(propertyname)
-{
-    try { 
+function torbutton_get_property_string(propertyname) {
+    try {
         if (!m_tb_string_bundle) {
             m_tb_string_bundle = torbutton_get_stringbundle();
         }
 
         return m_tb_string_bundle.GetStringFromName(propertyname);
-    } catch(e) {
-        torbutton_log(4, "Unlocalized string "+propertyname);
+    } catch (e) {
+        torbutton_log(4, "Unlocalized string " + propertyname);
     }
 
     return propertyname;
 }
-
