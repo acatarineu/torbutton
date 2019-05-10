@@ -54,7 +54,7 @@ pref("extensions.torbutton.noscript_inited", false);
 pref("extensions.torbutton.noscript_persist", false);
 
 // Browser home page:
-pref("browser.startup.homepage", "chrome://torbutton/content/locale/non-localized.properties");
+pref("browser.startup.homepage", "about:tor");
 
 // This pref specifies an ad-hoc "version" for various pref update hacks we need to do
 pref("extensions.torbutton.pref_fixup_version", 0);
