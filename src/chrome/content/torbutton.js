@@ -1661,12 +1661,6 @@ function torbutton_check_protections()
   }
 }
 
-// Bug 1506 P2: I think cookie protections is a neat feature.
-function torbutton_open_cookie_dialog() {
-  showDialog(window, 'chrome://torbutton/content/torcookiedialog.xul',
-             'Cookie Protections', 'centerscreen,chrome,dialog,modal,resizable');
-}
-
 // -------------- HISTORY & COOKIES ---------------------
 
 // Bug 1506 P4: Used by New Identity if cookie protections are

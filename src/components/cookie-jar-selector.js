@@ -24,7 +24,6 @@ const Cu = Components.utils;
 Cu.import("resource://torbutton/modules/default-prefs.js", {})
   .ensureDefaultPrefs();
 
-// XXX: Must match the definition in torcookie.js :/
 function Cookie(number,name,value,isDomain,host,rawHost,HttpOnly,path,isSecure,isSession,
                 expires,isProtected) {
   this.number = number;
