@@ -86,12 +86,9 @@ var torbutton_unique_pref_observer =
     {
         this.forced_ua = false;
         m_tb_prefs.addObserver("extensions.torbutton", this, false);
-        m_tb_prefs.addObserver("network.cookie", this, false);
         m_tb_prefs.addObserver("browser.privatebrowsing.autostart", this, false);
         m_tb_prefs.addObserver("javascript", this, false);
         m_tb_prefs.addObserver("plugin.disable", this, false);
-        m_tb_prefs.addObserver("privacy.firstparty.isolate", this, false);
-        m_tb_prefs.addObserver("privacy.resistFingerprinting", this, false);
 
         // We observe xpcom-category-entry-added for plugins w/ Gecko-Content-Viewers
         var observerService = Services.obs;
@@ -101,12 +98,9 @@ var torbutton_unique_pref_observer =
     unregister: function()
     {
         m_tb_prefs.removeObserver("extensions.torbutton", this);
-        m_tb_prefs.removeObserver("network.cookie", this);
         m_tb_prefs.removeObserver("browser.privatebrowsing.autostart", this);
         m_tb_prefs.removeObserver("javascript", this);
         m_tb_prefs.removeObserver("plugin.disable", this);
-        m_tb_prefs.removeObserver("privacy.firstparty.isolate", this);
-        m_tb_prefs.removeObserver("privacy.resistFingerprinting", this);
 
         var observerService = Services.obs;
         observerService.removeObserver(this, "xpcom-category-entry-added");
@@ -154,12 +148,6 @@ var torbutton_unique_pref_observer =
                 break;
             case "extensions.torbutton.use_nontor_proxy":
                 torbutton_use_nontor_proxy();
-                break;
-            case "privacy.resistFingerprinting":
-                torbutton_update_fingerprinting_prefs();
-                break;
-            case "privacy.firstparty.isolate":
-                torbutton_update_isolation_prefs();
                 break;
         }
     }
@@ -1505,30 +1493,6 @@ function torbutton_update_disk_prefs() {
     Services.prefs.savePrefFile(null);
 }
 
-function torbutton_update_fingerprinting_prefs() {
-    var mode = m_tb_prefs.getBoolPref("privacy.resistFingerprinting");
-
-    m_tb_prefs.setBoolPref("webgl.disable-extensions", mode);
-    m_tb_prefs.setBoolPref("dom.network.enabled", !mode);
-    m_tb_prefs.setBoolPref("dom.enable_performance", !mode);
-    m_tb_prefs.setBoolPref("plugin.expose_full_path", !mode);
-    m_tb_prefs.setBoolPref("browser.zoom.siteSpecific", !mode);
-
-    m_tb_prefs.setBoolPref("extensions.torbutton.resize_new_windows", mode);
-
-    // Force prefs to be synced to disk
-    Services.prefs.savePrefFile(null);
-}
-
-function torbutton_update_isolation_prefs() {
-    let isolate = m_tb_prefs.getBoolPref("privacy.firstparty.isolate");
-
-    m_tb_prefs.setBoolPref("security.enable_tls_session_tickets", !isolate);
-
-    // Force prefs to be synced to disk
-    Services.prefs.savePrefFile(null);
-}
-
 // This function closes all XUL browser windows except this one. For this
 // window, it closes all existing tabs and creates one about:blank tab.
 function torbutton_close_tabs_on_new_identity() {
@@ -1770,9 +1734,6 @@ function torbutton_do_startup()
         // Bug 1506: Should probably be moved to an XPCOM component
         torbutton_do_main_window_startup();
 
-        // For charsets
-        torbutton_update_fingerprinting_prefs();
-
         // #5758: Last ditch effort to keep Vanilla Torbutton users from totally
         // being pwnt.  This is a pretty darn ugly hack, too. But because of #5863,
         // we really don't care about preserving the user's values for this.
@@ -1903,7 +1864,7 @@ function torbutton_new_window(event)
     let progress = Cc["@mozilla.org/docloaderservice;1"]
                      .getService(Ci.nsIWebProgress);
 
-    if (m_tb_prefs.getBoolPref("extensions.torbutton.resize_new_windows")
+    if (m_tb_prefs.getBoolPref("privacy.resistFingerprinting")
             && torbutton_is_windowed(window)) {
       progress.addProgressListener(torbutton_resizelistener,
                                    Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
