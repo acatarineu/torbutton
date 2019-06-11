@@ -1989,60 +1989,6 @@ var torbutton_resizelistener =
   onSecurityChange: function() {}
 };
 
-// aURI should be an http or https nsIURI object.
-function torbutton_get_current_accept_language_value(aURI)
-{
-  try {
-    let ioService = Services.io;
-    let channel = ioService.newChannelFromURI(aURI);
-    let httpChannel = channel.QueryInterface(Ci.nsIHttpChannel);
-    return httpChannel.getRequestHeader("Accept-Language");
-  } catch (e) {}
-
-  return null;
-}
-
-// Take URL strings the user has specified for a homepage
-// and normalize it so it looks like a real URL.
-function torbutton_normalize_homepage_url_string(aURLString)
-{
-  if (!aURLString) return null;
-  if (typeof aURLString !== "string") return null;
-  let url;
-  try {
-    url = new URL(aURLString);
-  } catch (e) {
-    try {
-      url = new URL("http://" + aURLString);
-    } catch (e) {
-      return null;
-    }
-  }
-  return url.href;
-}
-
-function torbutton_is_homepage_url(aURI)
-{
-  if (!aURI)
-    return false;
-
-  let homePageURLs;
-  let choice = m_tb_prefs.getIntPref("browser.startup.page");
-  if ((1 == choice) || (3 == choice)) try {
-     // A homepage may be used at startup. Get the values and check against
-     // aURI.spec.
-     homePageURLs = m_tb_prefs.getComplexValue("browser.startup.homepage",
-                                               Ci.nsIPrefLocalizedString).data;
-  } catch (e) {}
-
-  if (!homePageURLs)
-    return false;
-
-  let urls = homePageURLs.split('|')
-               .map(torbutton_normalize_homepage_url_string);
-  return (urls.indexOf(aURI.spec) >= 0);
-}
-
 // Makes sure the item in the Help Menu and the link in about:tor
 // for the Tor Browser User Manual are only visible when
 // show_torbrowser_manual() returns true.
