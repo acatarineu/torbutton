@@ -2,6 +2,7 @@
 var torbutton_init;
 var torbutton_new_circuit;
 var torbutton_new_identity;
+var torbutton_open_network_settings;
 
 (() => {
 // Bug 1506 P1-P5: This is the main Torbutton overlay file. Much needs to be
@@ -1152,10 +1153,10 @@ function torbutton_close_window(event) {
 }
 
 
-function torbutton_open_network_settings() {
+torbutton_open_network_settings = () => {
   var obsSvc = Services.obs;
   obsSvc.notifyObservers(this, "TorOpenNetworkSettings");
-}
+};
 
 
 window.addEventListener('load',torbutton_new_window,false);
