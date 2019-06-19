@@ -289,7 +289,88 @@ function torbutton_get_property_string(propertyname)
     return propertyname;
 }
 
+// Bug 1506 P4: Control port interaction. Needed for New Identity.
+function torbutton_socket_readline(input) {
+  var str = "";
+  var bytes;
+  while ((bytes = input.readBytes(1)) != "\n") {
+    if (bytes != "\r")
+      str += bytes;
+  }
+  return str;
+}
+
+// Bug 1506 P4: Control port interaction. Needed for New Identity.
+//
+// Executes a command on the control port.
+// Return a string response upon success and null upon error.
+function torbutton_send_ctrl_cmd(window, command, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
+    m_tb_control_host, m_tb_control_desc) {
+  const m_tb_domWindowUtils = window.windowUtils;
+  // We spin the event queue until it is empty and we can be sure that sending
+  // NEWNYM is not leading to a deadlock (see bug 9531 comment 23 for an
+  // invstigation on why and when this may happen). This is surrounded by
+  // suppressing/unsuppressing user initiated events in a window's document to
+  // be sure that these events are not interfering with processing events being
+  // in the event queue.
+  var thread = Services.tm.currentThread;
+  m_tb_domWindowUtils.suppressEventHandling(true);
+  while (thread.processNextEvent(false));
+  m_tb_domWindowUtils.suppressEventHandling(false);
+
+  try {
+    let sts = Cc["@mozilla.org/network/socket-transport-service;1"]
+        .getService(Ci.nsISocketTransportService);
+    let socket;
+    if (m_tb_control_ipc_file) {
+      socket = sts.createUnixDomainTransport(m_tb_control_ipc_file);
+    } else {
+      socket = sts.createTransport(null, 0, m_tb_control_host,
+                                   m_tb_control_port, null);
+    }
+
+    // If we don't get a response from the control port in 2 seconds, someting is wrong..
+    socket.setTimeout(Ci.nsISocketTransport.TIMEOUT_READ_WRITE, 2);
+
+    var input = socket.openInputStream(3, 1, 1); // 3 == OPEN_BLOCKING|OPEN_UNBUFFERED
+    var output = socket.openOutputStream(3, 1, 1); // 3 == OPEN_BLOCKING|OPEN_UNBUFFERED
+
+    var inputStream     = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
+    var outputStream    = Cc["@mozilla.org/binaryoutputstream;1"].createInstance(Ci.nsIBinaryOutputStream);
+
+    inputStream.setInputStream(input);
+    outputStream.setOutputStream(output);
+
+    var auth_cmd = "AUTHENTICATE " + m_tb_control_pass + "\r\n";
+    outputStream.writeBytes(auth_cmd, auth_cmd.length);
+
+    var bytes = torbutton_socket_readline(inputStream);
+
+    if (bytes.indexOf("250") != 0) {
+      torbutton_safelog(4, "Unexpected auth response on control port " + m_tb_control_desc + ":", bytes);
+      return null;
+    }
+
+    outputStream.writeBytes(command, command.length);
+    bytes = torbutton_socket_readline(inputStream);
+    if (bytes.indexOf("250") != 0) {
+      torbutton_safelog(4, "Unexpected command response on control port " + m_tb_control_desc + ":", bytes);
+      return null;
+    }
+
+    // Closing these streams prevents a shutdown hang on Mac OS. See bug 10201.
+    inputStream.close();
+    outputStream.close();
+    socket.close(Cr.NS_OK);
+    return bytes.substr(4);
+  } catch (e) {
+    torbutton_log(4, "Exception on control port " + e);
+    return null;
+  }
+}
+
 // Export utility functions for external use.
 let EXPORTED_SYMBOLS = ["bindPref", "bindPrefAndInit", "getEnv", "getLocale", "getDomainForBrowser",
                         "getPrefValue", "observe", "showDialog", "show_torbrowser_manual", "unescapeTorString",
-                        "torbutton_safelog", "torbutton_log", "torbutton_get_property_string"];
+                        "torbutton_safelog", "torbutton_log", "torbutton_get_property_string",
+                        "torbutton_send_ctrl_cmd"];
