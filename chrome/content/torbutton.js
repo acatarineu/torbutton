@@ -65,33 +65,6 @@ async function clearData(flags) {
   });
 }
 
-// Bug 1506 P1: This object is only for updating the UI for toggling and style
-var torbutton_window_pref_observer =
-{
-    register: function()
-    {
-        m_tb_prefs.addObserver("extensions.torbutton", this, false);
-    },
-
-    unregister: function()
-    {
-        m_tb_prefs.removeObserver("extensions.torbutton", this);
-    },
-
-    // topic:   what event occurred
-    // subject: what nsIPrefBranch we're observing
-    // data:    which pref has been changed (relative to subject)
-    observe: function(subject, topic, data)
-    {
-        if (topic != "nsPref:changed") return;
-        switch (data) {
-            case k_tb_browser_update_needed_pref:
-                torbutton_notify_if_update_needed();
-                break;
-        }
-    }
-}
-
 // Bug 1506 P2: This object keeps Firefox prefs in sync with Torbutton prefs.
 // It probably could stand some simplification (See #3100). It also belongs
 // in a component, not the XUL overlay.
@@ -191,9 +164,6 @@ var torbutton_tor_check_observer = {
     observe: function(subject, topic, data)
     {
       if (topic == k_tb_tor_check_failed_topic) {
-        // Update toolbar icon and tooltip.
-        torbutton_update_toolbutton();
-
         // Update all open about:tor pages.
         torbutton_abouttor_message_handler.updateAllOpenPages();
 
@@ -216,16 +186,6 @@ var torbutton_tor_check_observer = {
       }
     },
 };
-
-function torbutton_init_toolbutton()
-{
-    try {
-      torbutton_log(3, "Initializing the Torbutton button.");
-      torbutton_update_toolbutton();
-    } catch(e) {
-      torbutton_log(4, "Error Initializing Torbutton button: "+e);
-    }
-}
 
 function torbutton_is_mobile() {
     return Services.appinfo.OS === "Android";
@@ -343,17 +303,8 @@ torbutton_init = function() {
 
     setupPreferencesForMobile();
 
-    // listen for our toolbar button being added so we can initialize it
-    torbutton_init_toolbutton();
-
-    torbutton_log(1, 'registering pref observer');
-    torbutton_window_pref_observer.register();
-
     torbutton_log(1, "registering Tor check observer");
     torbutton_tor_check_observer.register();
-
-    torbutton_update_toolbutton();
-    torbutton_notify_if_update_needed();
 
     try {
         createTorCircuitDisplay(m_tb_control_ipc_file, m_tb_control_host,
@@ -488,56 +439,6 @@ function torbutton_confirm_plugins() {
   }
 }
 
-// Bug 1506 P2: It might be nice to let people move the button around, I guess?
-function torbutton_get_toolbutton() {
-    var o_toolbutton = false;
-
-    torbutton_log(1, 'get_toolbutton(): looking for button element');
-    if (document.getElementById("torbutton-button")) {
-        o_toolbutton = document.getElementById("torbutton-button");
-    } else if (document.getElementById("torbutton-button-tb")) {
-        o_toolbutton = document.getElementById("torbutton-button-tb");
-    } else if (document.getElementById("torbutton-button-tb-msg")) {
-        o_toolbutton = document.getElementById("torbutton-button-tb-msg");
-    } else {
-        torbutton_log(3, 'get_toolbutton(): did not find torbutton-button');
-    }
-
-    return o_toolbutton;
-}
-
-function torbutton_update_is_needed() {
-    var updateNeeded = false;
-    try {
-        updateNeeded = m_tb_prefs.getBoolPref(k_tb_browser_update_needed_pref);
-    } catch (e) {}
-
-    return updateNeeded;
-}
-
-function torbutton_notify_if_update_needed() {
-    function setOrClearAttribute(aElement, aAttrName, aValue)
-    {
-        if (!aElement || !aAttrName)
-            return;
-
-        if (aValue)
-            aElement.setAttribute(aAttrName, aValue);
-        else
-            aElement.removeAttribute(aAttrName);
-    }
-
-    let updateNeeded = torbutton_update_is_needed();
-
-    // Change look of toolbar item (enable/disable animated update icon).
-    var btn = torbutton_get_toolbutton();
-    setOrClearAttribute(btn, "tbUpdateNeeded", updateNeeded);
-
-    // Make the "check for update" menu item bold if an update is needed.
-    var item = document.getElementById("torbutton-checkForUpdate");
-    setOrClearAttribute(item, "tbUpdateNeeded", updateNeeded);
-}
-
 // Bug 1506 P4: Checking for Tor Browser updates is pretty important,
 // probably even as a fallback if we ever do get a working updater.
 function torbutton_do_async_versioncheck() {
@@ -626,21 +527,6 @@ function torbutton_do_async_versioncheck() {
     return -1;
   }
 
-}
-
-function torbutton_update_toolbutton()
-{
-  let o_toolbutton = torbutton_get_toolbutton();
-  if (!o_toolbutton) return;
-
-  let isOK = torbutton_tor_check_ok();
-  let tbstatus = isOK ? "on" : "off";
-  o_toolbutton.setAttribute("tbstatus", tbstatus);
-
-  let tooltipKey = isOK ? "torbutton.panel.label.enabled"
-                        : "torbutton.panel.label.disabled";
-  o_toolbutton.setAttribute("tooltiptext",
-                            torbutton_get_property_string(tooltipKey));
 }
 
 // Bug 1506 P4: Control port interaction. Needed for New Identity.
@@ -1190,7 +1076,6 @@ function torbutton_do_tor_check()
     else {
       // The check failed.  Update toolbar icon and tooltip.
       checkSvc.statusOfTorCheck = checkSvc.kCheckFailed;
-      torbutton_update_toolbutton();
     }
   }
   else {
@@ -1746,7 +1631,6 @@ function torbutton_new_window(event)
 // Bug 1506 P2: This is only needed because we have observers
 // in XUL that should be in an XPCOM component
 function torbutton_close_window(event) {
-    torbutton_window_pref_observer.unregister();
     torbutton_tor_check_observer.unregister();
 
     window.removeEventListener("sizemodechange", m_tb_resize_handler,
