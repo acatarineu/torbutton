@@ -31,9 +31,6 @@ let {
 let SecurityPrefs = ChromeUtils.import("resource://torbutton/modules/security-prefs.js", {});
 let { configureControlPortModule } = Cu.import("resource://torbutton/modules/tor-control-port.js", {});
 
-const k_tb_last_browser_version_pref = "extensions.torbutton.lastBrowserVersion";
-const k_tb_browser_update_needed_pref = "extensions.torbutton.updateNeeded";
-const k_tb_last_update_check_pref = "extensions.torbutton.lastUpdateCheck";
 const k_tb_tor_check_failed_topic = "Torbutton:TorCheckFailed";
 
 var m_tb_prefs = Services.prefs;
@@ -64,33 +61,6 @@ async function clearData(flags) {
       },
     });
   });
-}
-
-// Bug 1506 P1: This object is only for updating the UI for toggling and style
-var torbutton_window_pref_observer =
-{
-    register: function()
-    {
-        m_tb_prefs.addObserver("extensions.torbutton", this, false);
-    },
-
-    unregister: function()
-    {
-        m_tb_prefs.removeObserver("extensions.torbutton", this);
-    },
-
-    // topic:   what event occurred
-    // subject: what nsIPrefBranch we're observing
-    // data:    which pref has been changed (relative to subject)
-    observe: function(subject, topic, data)
-    {
-        if (topic != "nsPref:changed") return;
-        switch (data) {
-            case k_tb_browser_update_needed_pref:
-                torbutton_notify_if_update_needed();
-                break;
-        }
-    }
 }
 
 // Bug 1506 P2: This object keeps Firefox prefs in sync with Torbutton prefs.
@@ -192,9 +162,6 @@ var torbutton_tor_check_observer = {
     observe: function(subject, topic, data)
     {
       if (topic == k_tb_tor_check_failed_topic) {
-        // Update toolbar icon and tooltip.
-        torbutton_update_toolbutton();
-
         // Update all open about:tor pages.
         torbutton_abouttor_message_handler.updateAllOpenPages();
 
@@ -218,16 +185,6 @@ var torbutton_tor_check_observer = {
     },
 };
 
-function torbutton_init_toolbutton()
-{
-    try {
-      torbutton_log(3, "Initializing the Torbutton button.");
-      torbutton_update_toolbutton();
-    } catch(e) {
-      torbutton_log(4, "Error Initializing Torbutton button: "+e);
-    }
-}
-
 function torbutton_is_mobile() {
     return Services.appinfo.OS === "Android";
 }
@@ -244,32 +201,6 @@ torbutton_init = function() {
         return;
     }
     m_tb_wasinited = true;
-
-    // Determine if we are running inside Tor Browser.
-    var cur_version;
-    try {
-      cur_version = m_tb_prefs.getCharPref("torbrowser.version");
-      torbutton_log(3, "This is a Tor Browser");
-    } catch(e) {
-      torbutton_log(3, "This is not a Tor Browser: "+e);
-    }
-
-    // If the Tor Browser version has changed since the last time Torbutton
-    // was loaded, reset the version check preferences in order to avoid
-    // incorrectly reporting that the browser needs to be updated.
-    var last_version;
-    try {
-      last_version = m_tb_prefs.getCharPref(k_tb_last_browser_version_pref);
-    } catch (e) {}
-    if (cur_version != last_version) {
-      m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, false);
-      if (m_tb_prefs.prefHasUserValue(k_tb_last_update_check_pref)) {
-        m_tb_prefs.clearUserPref(k_tb_last_update_check_pref);
-      }
-
-      if (cur_version)
-        m_tb_prefs.setCharPref(k_tb_last_browser_version_pref, cur_version);
-    }
 
     let tlps;
     try {
@@ -347,17 +278,8 @@ torbutton_init = function() {
 
     setupPreferencesForMobile();
 
-    // listen for our toolbar button being added so we can initialize it
-    torbutton_init_toolbutton();
-
-    torbutton_log(1, 'registering pref observer');
-    torbutton_window_pref_observer.register();
-
     torbutton_log(1, "registering Tor check observer");
     torbutton_tor_check_observer.register();
-
-    torbutton_update_toolbutton();
-    torbutton_notify_if_update_needed();
 
     try {
         createTorCircuitDisplay("extensions.torbutton.display_circuit");
@@ -488,161 +410,6 @@ function torbutton_confirm_plugins() {
       }
     }
   }
-}
-
-// Bug 1506 P2: It might be nice to let people move the button around, I guess?
-function torbutton_get_toolbutton() {
-    var o_toolbutton = false;
-
-    torbutton_log(1, 'get_toolbutton(): looking for button element');
-    if (document.getElementById("torbutton-button")) {
-        o_toolbutton = document.getElementById("torbutton-button");
-    } else if (document.getElementById("torbutton-button-tb")) {
-        o_toolbutton = document.getElementById("torbutton-button-tb");
-    } else if (document.getElementById("torbutton-button-tb-msg")) {
-        o_toolbutton = document.getElementById("torbutton-button-tb-msg");
-    } else {
-        torbutton_log(3, 'get_toolbutton(): did not find torbutton-button');
-    }
-
-    return o_toolbutton;
-}
-
-function torbutton_update_is_needed() {
-    var updateNeeded = false;
-    try {
-        updateNeeded = m_tb_prefs.getBoolPref(k_tb_browser_update_needed_pref);
-    } catch (e) {}
-
-    return updateNeeded;
-}
-
-function torbutton_notify_if_update_needed() {
-    function setOrClearAttribute(aElement, aAttrName, aValue)
-    {
-        if (!aElement || !aAttrName)
-            return;
-
-        if (aValue)
-            aElement.setAttribute(aAttrName, aValue);
-        else
-            aElement.removeAttribute(aAttrName);
-    }
-
-    let updateNeeded = torbutton_update_is_needed();
-
-    // Change look of toolbar item (enable/disable animated update icon).
-    var btn = torbutton_get_toolbutton();
-    setOrClearAttribute(btn, "tbUpdateNeeded", updateNeeded);
-
-    // Make the "check for update" menu item bold if an update is needed.
-    var item = document.getElementById("torbutton-checkForUpdate");
-    setOrClearAttribute(item, "tbUpdateNeeded", updateNeeded);
-}
-
-// Bug 1506 P4: Checking for Tor Browser updates is pretty important,
-// probably even as a fallback if we ever do get a working updater.
-function torbutton_do_async_versioncheck() {
-  if (!m_tb_prefs.getBoolPref("extensions.torbutton.versioncheck_enabled")) {
-    return;
-  }
-
-  // Suppress update check if done recently.
-  const kMinSecsBetweenChecks = 120 * 60; // 2.0 hours
-  var now = Date.now() / 1000;
-  var lastCheckTime;
-  try {
-    lastCheckTime = parseFloat(m_tb_prefs.getCharPref(k_tb_last_update_check_pref));
-    if (isNaN(lastCheckTime))
-      lastCheckTime = undefined;
-  } catch (e) {}
-
-  if (lastCheckTime && ((now - lastCheckTime) < kMinSecsBetweenChecks))
-    return;
-
-  m_tb_prefs.setCharPref(k_tb_last_update_check_pref, now);
-
-  torbutton_log(3, "Checking version with socks port: "
-          +m_tb_prefs.getIntPref("network.proxy.socks_port"));
-  try {
-    var req = new XMLHttpRequest();
-    var url = m_tb_prefs.getCharPref("extensions.torbutton.versioncheck_url");
-    req.open('GET', url, true);
-    req.channel.loadFlags |= Ci.nsIRequest.LOAD_BYPASS_CACHE;
-    req.overrideMimeType("text/json");
-    req.onreadystatechange = function (oEvent) {
-      if (req.readyState === 4) {
-        if(req.status == 200) {
-          if(!req.responseText) {
-            torbutton_log(5, "Version check failed! No JSON present!");
-            return -1;
-          }
-          try {
-            var version_list = JSON.parse(req.responseText);
-            var my_version = m_tb_prefs.getCharPref("torbrowser.version");
-            var platformSuffix;
-            var platform = Services.appinfo.OS;
-            switch (platform) {
-              case "WINNT":
-                platformSuffix = "Windows";
-                break;
-              case "Darwin":
-                platformSuffix = "MacOS";
-                break;
-              case "Linux":
-              case "Android":
-                platformSuffix = platform;
-                break;
-            }
-            if (platformSuffix)
-              my_version += "-" + platformSuffix;
-
-            if (version_list.indexOf(my_version) >= 0) {
-              torbutton_log(3, "Version check passed.");
-              m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, false);
-              return;
-            }
-            torbutton_log(5, "Your Tor Browser is out of date.");
-            m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, true);
-            return;
-          } catch(e) {
-            torbutton_log(5, "Version check failed! JSON parsing error: "+e);
-            return;
-          }
-        } else if (req.status == 404) {
-          // We're going to assume 404 means the service is not implemented yet.
-          torbutton_log(3, "Version check failed. Versions file is 404.");
-          return -1;
-        }
-        torbutton_log(5, "Version check failed! Web server error: "+req.status);
-        return -1;
-      }
-    };
-    req.send(null);
-  } catch(e) {
-    if(e.result == 0x80004005) { // NS_ERROR_FAILURE
-      torbutton_log(5, "Version check failed! Is tor running?");
-      return -1;
-    }
-    torbutton_log(5, "Version check failed! Tor internal error: "+e);
-    return -1;
-  }
-
-}
-
-function torbutton_update_toolbutton()
-{
-  let o_toolbutton = torbutton_get_toolbutton();
-  if (!o_toolbutton) return;
-
-  let isOK = torbutton_tor_check_ok();
-  let tbstatus = isOK ? "on" : "off";
-  o_toolbutton.setAttribute("tbstatus", tbstatus);
-
-  let tooltipKey = isOK ? "torbutton.panel.label.enabled"
-                        : "torbutton.panel.label.disabled";
-  o_toolbutton.setAttribute("tooltiptext",
-                            torbutton_get_property_string(tooltipKey));
 }
 
 // Bug 1506 P4: Control port interaction. Needed for New Identity.
@@ -1192,7 +959,6 @@ function torbutton_do_tor_check()
     else {
       // The check failed.  Update toolbar icon and tooltip.
       checkSvc.statusOfTorCheck = checkSvc.kCheckFailed;
-      torbutton_update_toolbutton();
     }
   }
   else {
@@ -1630,16 +1396,6 @@ function torbutton_do_startup()
     }
 }
 
-// Perform version check when a new tab is opened.
-function torbutton_new_tab(event)
-{
-    // listening for new tabs
-    torbutton_log(3, "New tab");
-
-    /* Perform the version check on new tab, module timer */
-    torbutton_do_async_versioncheck();
-}
-
 // Bug 1506 P3: Used to decide if we should resize the window.
 //
 // Returns true if the window wind is neither maximized, full screen,
@@ -1726,8 +1482,6 @@ function torbutton_new_window(event)
     if (!m_tb_wasinited) {
         torbutton_init();
     }
-    // Add tab open listener..
-    browser.tabContainer.addEventListener("TabOpen", torbutton_new_tab, false);
 
     torbutton_do_startup();
 
@@ -1739,16 +1493,12 @@ function torbutton_new_window(event)
                                    Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
     }
 
-    // Check the version on every new window. We're already pinging check in these cases.
-    torbutton_do_async_versioncheck();
-
     torbutton_do_tor_check();
 }
 
 // Bug 1506 P2: This is only needed because we have observers
 // in XUL that should be in an XPCOM component
 function torbutton_close_window(event) {
-    torbutton_window_pref_observer.unregister();
     torbutton_tor_check_observer.unregister();
 
     window.removeEventListener("sizemodechange", m_tb_resize_handler,
