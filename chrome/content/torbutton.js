@@ -50,8 +50,6 @@ var m_tb_control_host = null;        // Set if using TCP.
 var m_tb_control_pass = null;
 var m_tb_control_desc = null;        // For logging.
 
-var m_tb_domWindowUtils = window.windowUtils;
-
 // Bug 1506 P1: This object is only for updating the UI for toggling and style
 var torbutton_window_pref_observer =
 {
@@ -587,26 +585,6 @@ function torbutton_notify_if_update_needed() {
     setOrClearAttribute(item, "tbUpdateNeeded", updateNeeded);
 }
 
-function torbutton_check_for_update() {
-    // Open the update prompt in the correct mode.  The update state
-    // checks used here were adapted from isPending() and isApplied() in
-    // Mozilla's browser/base/content/aboutDialog.js code.
-    let updateMgr = Cc["@mozilla.org/updates/update-manager;1"]
-                     .getService(Ci.nsIUpdateManager);
-    let update = updateMgr.activeUpdate;
-    let updateState = (update) ? update.state : undefined;
-    let pendingStates = [ "pending", "pending-service",
-                          "applied", "applied-service" ];
-    let isPending = (updateState && (pendingStates.indexOf(updateState) >= 0));
-
-    let prompter = Cc["@mozilla.org/updates/update-prompt;1"]
-                     .createInstance(Ci.nsIUpdatePrompt);
-    if (isPending)
-        prompter.showUpdateDownloaded(update, false);
-    else
-        prompter.checkForUpdates();
-}
-
 // Bug 1506 P4: Checking for Tor Browser updates is pretty important,
 // probably even as a fallback if we ever do get a working updater.
 function torbutton_do_async_versioncheck() {
@@ -1065,39 +1043,6 @@ function torbutton_update_disk_prefs() {
 
     // Force prefs to be synced to disk
     Services.prefs.savePrefFile(null);
-}
-
-// Bug 1506 P2: This code is only important for disabling
-// New Identity where it is not supported (ie no control port).
-function torbutton_check_protections()
-{
-  var env = Cc["@mozilla.org/process/environment;1"]
-              .getService(Ci.nsIEnvironment);
-
-  // Bug 14100: check for the existence of an environment variable
-  // in order to toggle the visibility of networksettings menuitem
-  if (env.exists("TOR_NO_DISPLAY_NETWORK_SETTINGS"))
-    document.getElementById("torbutton-networksettings").hidden = true;
-  else
-    document.getElementById("torbutton-networksettings").hidden = false;
-
-  // Bug 21091: check for the existence of an environment variable
-  // in order to toggle the visibility of the torbutton-checkForUpdate
-  // menuitem and its separator.
-  if (env.exists("TOR_HIDE_UPDATE_CHECK_UI")) {
-    document.getElementById("torbutton-checkForUpdateSeparator").hidden = true;
-    document.getElementById("torbutton-checkForUpdate").hidden = true;
-  } else {
-    document.getElementById("torbutton-checkForUpdateSeparator").hidden = false;
-    document.getElementById("torbutton-checkForUpdate").hidden = false;
-  }
-
-  if (!m_tb_control_pass || (!m_tb_control_ipc_file && !m_tb_control_port)) {
-    // TODO: Remove the Torbutton menu entry again once we have done our
-    // security control redesign.
-    document.getElementById("menu_newIdentity").disabled = true;
-    document.getElementById("appMenuNewIdentity").disabled = true;
-  }
 }
 
 // -------------- HISTORY & COOKIES ---------------------
