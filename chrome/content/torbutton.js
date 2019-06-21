@@ -29,10 +29,15 @@ let {
   torbutton_get_property_string,
 } = ChromeUtils.import("resource://torbutton/modules/utils.js", {});
 let { controller } = ChromeUtils.import("resource://torbutton/modules/tor-control-port.js", {});
-let SecurityPrefs = ChromeUtils.import("resource://torbutton/modules/security-prefs.js", {});
 let { torbutton_do_new_identity } = ChromeUtils.import("resource://torbutton/modules/new-identity.js", {});
 
-const k_tb_last_browser_version_pref = "extensions.torbutton.lastBrowserVersion";
+let checkSvc = Cc["@torproject.org/torbutton-torCheckService;1"]
+                   .getService(Ci.nsISupports).wrappedJSObject;
+let startupObs = Cc["@torproject.org/startup-observer;1"]
+                   .getService(Ci.nsISupports).wrappedJSObject;
+const { m_tb_control_ipc_file, m_tb_control_host,
+  m_tb_control_port, m_tb_control_pass } = startupObs.TorGetControlParams();
+
 const k_tb_browser_update_needed_pref = "extensions.torbutton.updateNeeded";
 const k_tb_last_update_check_pref = "extensions.torbutton.lastUpdateCheck";
 const k_tb_tor_check_failed_topic = "Torbutton:TorCheckFailed";
@@ -44,11 +49,6 @@ var m_tb_wasinited = false;
 var m_tb_is_main_window = false;
 
 var m_tb_confirming_plugins = false;
-
-var m_tb_control_ipc_file = null;    // Set if using IPC (UNIX domain socket).
-var m_tb_control_port = null;        // Set if using TCP.
-var m_tb_control_host = null;        // Set if using TCP.
-var m_tb_control_pass = null;
 
 // Bug 1506 P2: This object keeps Firefox prefs in sync with Torbutton prefs.
 // It probably could stand some simplification (See #3100). It also belongs
@@ -174,121 +174,16 @@ function torbutton_is_mobile() {
 torbutton_init = function() {
     torbutton_log(3, 'called init()');
 
-    SecurityPrefs.initialize();
-
     if (m_tb_wasinited) {
         return;
     }
     m_tb_wasinited = true;
-
-    // Determine if we are running inside Tor Browser.
-    var cur_version;
-    try {
-      cur_version = m_tb_prefs.getCharPref("torbrowser.version");
-      torbutton_log(3, "This is a Tor Browser");
-    } catch(e) {
-      torbutton_log(3, "This is not a Tor Browser: "+e);
-    }
-
-    // If the Tor Browser version has changed since the last time Torbutton
-    // was loaded, reset the version check preferences in order to avoid
-    // incorrectly reporting that the browser needs to be updated.
-    var last_version;
-    try {
-      last_version = m_tb_prefs.getCharPref(k_tb_last_browser_version_pref);
-    } catch (e) {}
-    if (cur_version != last_version) {
-      m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, false);
-      if (m_tb_prefs.prefHasUserValue(k_tb_last_update_check_pref)) {
-        m_tb_prefs.clearUserPref(k_tb_last_update_check_pref);
-      }
-
-      if (cur_version)
-        m_tb_prefs.setCharPref(k_tb_last_browser_version_pref, cur_version);
-    }
-
-    let tlps;
-    try {
-        tlps = Cc["@torproject.org/torlauncher-protocol-service;1"]
-                 .getService(Ci.nsISupports).wrappedJSObject;
-    } catch(e) {}
-
-    // Bug 1506 P4: These vars are very important for New Identity
-    var environ = Cc["@mozilla.org/process/environment;1"]
-                   .getService(Ci.nsIEnvironment);
-
-    if (environ.exists("TOR_CONTROL_PASSWD")) {
-        m_tb_control_pass = environ.get("TOR_CONTROL_PASSWD");
-    } else if (environ.exists("TOR_CONTROL_COOKIE_AUTH_FILE")) {
-        var cookie_path = environ.get("TOR_CONTROL_COOKIE_AUTH_FILE");
-        try {
-            if ("" != cookie_path) {
-                m_tb_control_pass = torbutton_read_authentication_cookie(cookie_path);
-            }
-        } catch(e) {
-            torbutton_log(4, 'unable to read authentication cookie');
-        }
-    } else {
-      try {
-        // Try to get password from Tor Launcher.
-        m_tb_control_pass = tlps.TorGetPassword(false);
-      } catch (e) {}
-    }
-
-    // Try to get the control port IPC file (an nsIFile) from Tor Launcher,
-    // since Tor Launcher knows how to handle its own preferences and how to
-    // resolve relative paths.
-    try {
-        m_tb_control_ipc_file = tlps.TorGetControlIPCFile();
-    } catch(e) {}
-
-    if (!m_tb_control_ipc_file) {
-        if (environ.exists("TOR_CONTROL_PORT")) {
-            m_tb_control_port = environ.get("TOR_CONTROL_PORT");
-        } else {
-            try {
-                const kTLControlPortPref = "extensions.torlauncher.control_port";
-                m_tb_control_port = m_tb_prefs.getIntPref(kTLControlPortPref);
-            } catch(e) {
-              // Since we want to disable some features when Tor Launcher is
-              // not installed (e.g., New Identity), we do not set a default
-              // port value here.
-            }
-        }
-
-        if (environ.exists("TOR_CONTROL_HOST")) {
-            m_tb_control_host = environ.get("TOR_CONTROL_HOST");
-        } else {
-            try {
-                const kTLControlHostPref = "extensions.torlauncher.control_host";
-                m_tb_control_host = m_tb_prefs.getCharPref(kTLControlHostPref);
-            } catch(e) {
-              m_tb_control_host = "127.0.0.1";
-            }
-        }
-    }
 
     // Add about:tor IPC message listener.
     window.messageManager.addMessageListener("AboutTor:Loaded",
                                    torbutton_abouttor_message_handler);
 
     setupPreferencesForMobile();
-
-    // XXX: Get rid of the cached asmjs (or IndexedDB) files on disk in case we
-    // don't allow things saved to disk. This is an ad-hoc fix to work around
-    // #19417. Once this is properly solved we should remove this code again.
-    if (m_tb_prefs.getBoolPref("browser.privatebrowsing.autostart")) {
-      let orig_quota_test = m_tb_prefs.getBoolPref("dom.quotaManager.testing");
-      try {
-        // This works only by setting the pref to `true` otherwise we get an
-        // exception and nothing is happening.
-        m_tb_prefs.setBoolPref("dom.quotaManager.testing", true);
-        Services.qms.clear();
-      } catch (e) {
-      } finally {
-        m_tb_prefs.setBoolPref("dom.quotaManager.testing", orig_quota_test);
-      }
-    }
 
     torbutton_log(1, "registering Tor check observer");
     torbutton_tor_check_observer.register();
@@ -569,30 +464,6 @@ function torbutton_do_async_versioncheck() {
   }
 }
 
-// Bug 1506 P4: Control port interaction. Needed for New Identity.
-function torbutton_read_authentication_cookie(path) {
-  var file = Cc["@mozilla.org/file/local;1"]
-             .createInstance(Ci.nsIFile);
-  file.initWithPath(path);
-  var fileStream = Cc["@mozilla.org/network/file-input-stream;1"]
-                   .createInstance(Ci.nsIFileInputStream);
-  fileStream.init(file, 1, 0, false);
-  var binaryStream = Cc["@mozilla.org/binaryinputstream;1"]
-                     .createInstance(Ci.nsIBinaryInputStream);
-  binaryStream.setInputStream(fileStream);
-  var array = binaryStream.readByteArray(fileStream.available());
-  binaryStream.close();
-  fileStream.close();
-  return torbutton_array_to_hexdigits(array);
-}
-
-// Bug 1506 P4: Control port interaction. Needed for New Identity.
-function torbutton_array_to_hexdigits(array) {
-  return array.map(function(c) {
-                     return String("0" + c.toString(16)).slice(-2)
-                   }).join('');
-};
-
 // Bug 1506 P4: Needed for New IP Address
 torbutton_new_circuit = function() {
   let firstPartyDomain = getDomainForBrowser(gBrowser);
@@ -681,8 +552,6 @@ function torbutton_use_nontor_proxy()
 
 async function torbutton_do_tor_check()
 {
-  let checkSvc = Cc["@torproject.org/torbutton-torCheckService;1"]
-                   .getService(Ci.nsISupports).wrappedJSObject;
   if (checkSvc.kCheckNotInitiated != checkSvc.statusOfTorCheck ||
       m_tb_prefs.getBoolPref("extensions.torbutton.use_nontor_proxy") ||
       !m_tb_prefs.getBoolPref("extensions.torbutton.test_enabled"))
@@ -837,8 +706,6 @@ async function torbutton_local_tor_check() {
 function torbutton_initiate_remote_tor_check() {
   let obsSvc = Services.obs;
   try {
-      let checkSvc = Cc["@torproject.org/torbutton-torCheckService;1"]
-                       .getService(Ci.nsISupports).wrappedJSObject;
       let req = checkSvc.createCheckRequest(true); // async
       req.onreadystatechange = function (aEvent) {
           if (req.readyState === 4) {
@@ -874,8 +741,6 @@ function torbutton_initiate_remote_tor_check() {
 
 function torbutton_tor_check_ok()
 {
-  let checkSvc = Cc["@torproject.org/torbutton-torCheckService;1"]
-                   .getService(Ci.nsISupports).wrappedJSObject;
   return (checkSvc.kCheckFailed != checkSvc.statusOfTorCheck);
 }
 
