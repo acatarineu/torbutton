@@ -22,11 +22,122 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 
 let NoScriptControl = ChromeUtils.import("resource://torbutton/modules/noscript-control.js", {});
+let SecurityPrefs = ChromeUtils.import("resource://torbutton/modules/security-prefs.js", {});
+let { torbutton_log } = ChromeUtils.import("resource://torbutton/modules/utils.js", {});
+
+let tlps;
+try {
+  tlps = Cc["@torproject.org/torlauncher-protocol-service;1"]
+             .getService(Ci.nsISupports).wrappedJSObject;
+} catch (e) {
+  torbutton_log(3, "tor launcher failed " + e);
+}
 
 // Module specific constants
 const kMODULE_NAME = "Startup";
 const kMODULE_CONTRACTID = "@torproject.org/startup-observer;1";
 const kMODULE_CID = Components.ID("06322def-6fde-4c06-aef6-47ae8e799629");
+
+const k_tb_last_browser_version_pref = "extensions.torbutton.lastBrowserVersion";
+const k_tb_browser_update_needed_pref = "extensions.torbutton.updateNeeded";
+const k_tb_last_update_check_pref = "extensions.torbutton.lastUpdateCheck";
+const k_tb_tor_check_failed_topic = "Torbutton:TorCheckFailed";
+
+let m_tb_control_pass;
+let m_tb_control_ipc_file;
+let m_tb_control_port;
+let m_tb_control_host;
+let m_tb_control_desc;
+
+// Bug 1506 P4: Control port interaction. Needed for New Identity.
+function torbutton_array_to_hexdigits(array) {
+  return array.map(function(c) {
+                     return String("0" + c.toString(16)).slice(-2)
+                   }).join('');
+};
+
+// Bug 1506 P4: Control port interaction. Needed for New Identity.
+function torbutton_read_authentication_cookie(path) {
+  var file = Cc["@mozilla.org/file/local;1"]
+             .createInstance(Ci.nsIFile);
+  file.initWithPath(path);
+  var fileStream = Cc["@mozilla.org/network/file-input-stream;1"]
+                   .createInstance(Ci.nsIFileInputStream);
+  fileStream.init(file, 1, 0, false);
+  var binaryStream = Cc["@mozilla.org/binaryinputstream;1"]
+                     .createInstance(Ci.nsIBinaryInputStream);
+  binaryStream.setInputStream(fileStream);
+  var array = binaryStream.readByteArray(fileStream.available());
+  binaryStream.close();
+  fileStream.close();
+  return torbutton_array_to_hexdigits(array);
+}
+
+function torbutton_init() {
+  const m_tb_prefs = Services.prefs;
+  SecurityPrefs.initialize();
+
+  // Bug 1506 P4: These vars are very important for New Identity
+  var environ = Cc["@mozilla.org/process/environment;1"]
+                 .getService(Ci.nsIEnvironment);
+
+  if (environ.exists("TOR_CONTROL_PASSWD")) {
+      m_tb_control_pass = environ.get("TOR_CONTROL_PASSWD");
+  } else if (environ.exists("TOR_CONTROL_COOKIE_AUTH_FILE")) {
+      var cookie_path = environ.get("TOR_CONTROL_COOKIE_AUTH_FILE");
+      try {
+          if ("" != cookie_path) {
+              m_tb_control_pass = torbutton_read_authentication_cookie(cookie_path);
+          }
+      } catch(e) {
+          torbutton_log(4, 'unable to read authentication cookie');
+      }
+  } else {
+    try {
+      // Try to get password from Tor Launcher.
+      m_tb_control_pass = tlps.TorGetPassword(false);
+    } catch (e) {}
+  }
+
+  // Try to get the control port IPC file (an nsIFile) from Tor Launcher,
+  // since Tor Launcher knows how to handle its own preferences and how to
+  // resolve relative paths.
+  try {
+      m_tb_control_ipc_file = tlps.TorGetControlIPCFile();
+  } catch(e) {}
+
+  if (m_tb_control_ipc_file) {
+      m_tb_control_desc = m_tb_control_ipc_file.path;
+  } else {
+      if (environ.exists("TOR_CONTROL_PORT")) {
+          m_tb_control_port = environ.get("TOR_CONTROL_PORT");
+      } else {
+          try {
+              const kTLControlPortPref = "extensions.torlauncher.control_port";
+              m_tb_control_port = m_tb_prefs.getIntPref(kTLControlPortPref);
+          } catch(e) {
+            // Since we want to disable some features when Tor Launcher is
+            // not installed (e.g., New Identity), we do not set a default
+            // port value here.
+          }
+      }
+
+      if (m_tb_control_port) {
+        m_tb_control_desc = "" + m_tb_control_port;
+      }
+
+      if (environ.exists("TOR_CONTROL_HOST")) {
+          m_tb_control_host = environ.get("TOR_CONTROL_HOST");
+      } else {
+          try {
+              const kTLControlHostPref = "extensions.torlauncher.control_host";
+              m_tb_control_host = m_tb_prefs.getCharPref(kTLControlHostPref);
+          } catch(e) {
+            m_tb_control_host = "127.0.0.1";
+          }
+      }
+  }
+}
 
 function cleanupCookies() {
   const migratedPref = "extensions.torbutton.cookiejar_migrated";
@@ -121,8 +232,6 @@ StartupObserver.prototype = {
         // Try to retrieve SOCKS proxy settings from Tor Launcher.
         let socksPortInfo;
         try {
-          let tlps = Cc["@torproject.org/torlauncher-protocol-service;1"]
-                     .getService(Ci.nsISupports).wrappedJSObject;
           socksPortInfo = tlps.TorGetSOCKSPortInfo();
         } catch(e) {
           this.logger.log(3, "tor launcher failed " + e);
@@ -188,6 +297,8 @@ StartupObserver.prototype = {
         NoScriptControl.initialize();
 
         this.setProxySettings();
+
+        torbutton_init();
       }
 
       // In all cases, force prefs to be synced to disk
@@ -203,6 +314,16 @@ StartupObserver.prototype = {
 
   // Hack to get us registered early to observe recovery
   _xpcom_categories: [{category:"profile-after-change"}],
+
+  TorGetControlParams() {
+    return {
+      m_tb_control_pass,
+      m_tb_control_ipc_file,
+      m_tb_control_port,
+      m_tb_control_host,
+      m_tb_control_desc,
+    };
+  },
 };
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([StartupObserver]);
