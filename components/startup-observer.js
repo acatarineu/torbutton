@@ -2,7 +2,7 @@
 // support. There are a couple of observer events that *might* be worth
 // listening to. Search for 1506 in the code.
 
-/*************************************************************************
+/** ***********************************************************************
  * Startup observer (JavaScript XPCOM component)
  *
  * Cases tested (each during Tor and Non-Tor, FF4 and FF3.6)
@@ -15,7 +15,7 @@
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 const { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "FileUtils",
+ChromeUtils.defineModuleGetter(this, "FileUtils",
                                   "resource://gre/modules/FileUtils.jsm");
 
 let NoScriptControl = ChromeUtils.import("resource://torbutton/modules/noscript-control.js", {});
@@ -58,10 +58,10 @@ function StartupObserver() {
     }
 
     try {
-      var test = this._prefs.getCharPref("torbrowser.version");
+      this._prefs.getCharPref("torbrowser.version");
       this.is_tbb = true;
       this.logger.log(3, "This is a Tor Browser's XPCOM");
-    } catch(e) {
+    } catch (e) {
       this.logger.log(3, "This is not a Tor Browser's XPCOM");
     }
 
@@ -70,8 +70,8 @@ function StartupObserver() {
       // before the initial SSL-Observatory test... If we lose the race, Firefox
       // caches the old proxy settings for check.tp.o somehwere, and it never loads :(
       this.setProxySettings();
-    } catch(e) {
-      this.logger.log(4, "Early proxy change failed. Will try again at profile load. Error: "+e);
+    } catch (e) {
+      this.logger.log(4, "Early proxy change failed. Will try again at profile load. Error: " + e);
     }
 
     cleanupCookies();
@@ -81,7 +81,7 @@ StartupObserver.prototype = {
     // Bug 6803: We need to get the env vars early due to
     // some weird proxy caching code that showed up in FF15.
     // Otherwise, homepage domain loads fail forever.
-    setProxySettings: function() {
+    setProxySettings() {
       if (!this.is_tbb)
         return;
 
@@ -101,7 +101,7 @@ StartupObserver.prototype = {
           let tlps = Cc["@torproject.org/torlauncher-protocol-service;1"]
                      .getService(Ci.nsISupports).wrappedJSObject;
           socksPortInfo = tlps.TorGetSOCKSPortInfo();
-        } catch(e) {
+        } catch (e) {
           this.logger.log(3, "tor launcher failed " + e);
         }
 
@@ -113,9 +113,7 @@ StartupObserver.prototype = {
           if (!isWindows && environ.exists("TOR_SOCKS_IPC_PATH")) {
             socksPortInfo.ipcFile = new FileUtils.File(
                                            environ.get("TOR_SOCKS_IPC_PATH"));
-          }
-          else
-          {
+          } else {
             if (environ.exists("TOR_SOCKS_HOST"))
               socksPortInfo.host = environ.get("TOR_SOCKS_HOST");
             if (environ.exists("TOR_SOCKS_PORT"))
@@ -128,18 +126,18 @@ StartupObserver.prototype = {
           let fph = Services.io.getProtocolHandler("file")
                                .QueryInterface(Ci.nsIFileProtocolHandler);
           let fileURI = fph.newFileURI(socksPortInfo.ipcFile);
-          this.logger.log(3, "Reset socks to "+fileURI.spec);
+          this.logger.log(3, "Reset socks to " + fileURI.spec);
           this._prefs.setCharPref("network.proxy.socks", fileURI.spec);
           this._prefs.setIntPref("network.proxy.socks_port", 0);
         } else {
           if (socksPortInfo.host) {
             this._prefs.setCharPref("network.proxy.socks", socksPortInfo.host);
-            this.logger.log(3, "Reset socks host to "+socksPortInfo.host);
+            this.logger.log(3, "Reset socks host to " + socksPortInfo.host);
           }
           if (socksPortInfo.port) {
             this._prefs.setIntPref("network.proxy.socks_port",
                                    socksPortInfo.port);
-            this.logger.log(3, "Reset socks port to "+socksPortInfo.port);
+            this.logger.log(3, "Reset socks port to " + socksPortInfo.port);
           }
         }
 
@@ -155,13 +153,13 @@ StartupObserver.prototype = {
       this.logger.log(3, "Synced network settings to environment.");
     },
 
-    observe: function(subject, topic, data) {
-      if(topic == "profile-after-change") {
+    observe(subject, topic, data) {
+      if (topic == "profile-after-change") {
         // Bug 1506 P1: We listen to these prefs as signals for startup,
         // but only for hackish reasons.
         this._prefs.setBoolPref("extensions.torbutton.startup", true);
 
-	// We need to listen for NoScript before it starts.
+        // We need to listen for NoScript before it starts.
         NoScriptControl.initialize();
 
         this.setProxySettings();
@@ -179,7 +177,7 @@ StartupObserver.prototype = {
   contractID: kMODULE_CONTRACTID,
 
   // Hack to get us registered early to observe recovery
-  _xpcom_categories: [{category:"profile-after-change"}],
+  _xpcom_categories: [{category: "profile-after-change"}],
 };
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([StartupObserver]);
