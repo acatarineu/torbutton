@@ -25,10 +25,10 @@ let {
   unescapeTorString,
   bindPrefAndInit,
   getDomainForBrowser,
-  torbutton_send_ctrl_cmd,
   torbutton_log,
   torbutton_get_property_string,
 } = ChromeUtils.import("resource://torbutton/modules/utils.js", {});
+let { controller } = ChromeUtils.import("resource://torbutton/modules/tor-control-port.js", {});
 let SecurityPrefs = ChromeUtils.import("resource://torbutton/modules/security-prefs.js", {});
 let { torbutton_do_new_identity } = ChromeUtils.import("resource://torbutton/modules/new-identity.js", {});
 
@@ -49,7 +49,6 @@ var m_tb_control_ipc_file = null;    // Set if using IPC (UNIX domain socket).
 var m_tb_control_port = null;        // Set if using TCP.
 var m_tb_control_host = null;        // Set if using TCP.
 var m_tb_control_pass = null;
-var m_tb_control_desc = null;        // For logging.
 
 // Bug 1506 P2: This object keeps Firefox prefs in sync with Torbutton prefs.
 // It probably could stand some simplification (See #3100). It also belongs
@@ -243,9 +242,7 @@ torbutton_init = function() {
         m_tb_control_ipc_file = tlps.TorGetControlIPCFile();
     } catch(e) {}
 
-    if (m_tb_control_ipc_file) {
-        m_tb_control_desc = m_tb_control_ipc_file.path;
-    } else {
+    if (!m_tb_control_ipc_file) {
         if (environ.exists("TOR_CONTROL_PORT")) {
             m_tb_control_port = environ.get("TOR_CONTROL_PORT");
         } else {
@@ -257,10 +254,6 @@ torbutton_init = function() {
               // not installed (e.g., New Identity), we do not set a default
               // port value here.
             }
-        }
-
-        if (m_tb_control_port) {
-          m_tb_control_desc = "" + m_tb_control_port;
         }
 
         if (environ.exists("TOR_CONTROL_HOST")) {
@@ -613,7 +606,7 @@ torbutton_new_circuit = function() {
 }
 
 // Bug 1506 P4: Needed for New Identity.
-torbutton_new_identity = function() {
+torbutton_new_identity = async function() {
   try {
     // Make sure that we can only click once on New Identiy to avoid race
     // conditions leading to failures (see bug 11783 for an example).
@@ -640,8 +633,8 @@ torbutton_new_identity = function() {
       m_tb_prefs.setBoolPref("extensions.torbutton.confirm_newnym", !askAgain.value);
 
       if (confirmed) {
-        torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
-          m_tb_control_host, m_tb_control_desc);
+        await torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
+          m_tb_control_host);
       } else {
         // TODO: Remove the Torbutton menu entry again once we have done our
         // security control redesign.
@@ -649,8 +642,8 @@ torbutton_new_identity = function() {
         document.getElementById("appMenuNewIdentity").disabled = false;
       }
     } else {
-        torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
-          m_tb_control_host, m_tb_control_desc);
+        await torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
+          m_tb_control_host);
     }
   } catch(e) {
     // If something went wrong make sure we have the New Identity button
@@ -683,10 +676,10 @@ function torbutton_use_nontor_proxy()
   // Always reset our identity if the proxy has changed from tor
   // to non-tor.
   torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
-    m_tb_control_host, m_tb_control_desc);
+    m_tb_control_host);
 }
 
-function torbutton_do_tor_check()
+async function torbutton_do_tor_check()
 {
   let checkSvc = Cc["@torproject.org/torbutton-torCheckService;1"]
                    .getService(Ci.nsISupports).wrappedJSObject;
@@ -705,21 +698,19 @@ function torbutton_do_tor_check()
       !env.exists(kEnvUseTransparentProxy) &&
       !env.exists(kEnvSkipControlPortTest) &&
       m_tb_prefs.getBoolPref("extensions.torbutton.local_tor_check")) {
-    if (torbutton_local_tor_check()) {
+    if (await torbutton_local_tor_check()) {
       checkSvc.statusOfTorCheck = checkSvc.kCheckSuccessful;
     } else {
       // The check failed.  Update toolbar icon and tooltip.
       checkSvc.statusOfTorCheck = checkSvc.kCheckFailed;
     }
-  }
-  else {
+  } else {
     // A local check is not possible, so perform a remote check.
     torbutton_initiate_remote_tor_check();
   }
 }
 
-function torbutton_local_tor_check()
-{
+async function torbutton_local_tor_check() {
   let didLogError = false;
 
   let proxyType = m_tb_prefs.getIntPref("network.proxy.type");
@@ -729,8 +720,15 @@ function torbutton_local_tor_check()
   // Ask tor for its SOCKS listener address and port and compare to the
   // browser preferences.
   const kCmdArg = "net/listeners/socks";
-  let resp = torbutton_send_ctrl_cmd(window, "GETINFO " + kCmdArg + "\r\n", m_tb_control_pass,
-    m_tb_control_ipc_file, m_tb_control_port, m_tb_control_host, m_tb_control_desc);
+  let ctrl = controller(m_tb_control_ipc_file, m_tb_control_host, m_tb_control_port, m_tb_control_pass,
+    function(err) {
+      // An error has occurred.
+      torbutton_log(1, err);
+      ctrl.close();
+    }
+  );
+  let resp = await ctrl.sendCommand("GETINFO " + kCmdArg + "\r\n");
+  ctrl.close();
   if (!resp)
     return false;
 

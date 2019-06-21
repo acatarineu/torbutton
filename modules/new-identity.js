@@ -1,7 +1,8 @@
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 const { PrivateBrowsingUtils } = ChromeUtils.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
-const { torbutton_log, torbutton_get_property_string, torbutton_send_ctrl_cmd } =
+const { torbutton_log, torbutton_get_property_string } =
   ChromeUtils.import("resource://torbutton/modules/utils.js");
+let { controller } = ChromeUtils.import("resource://torbutton/modules/tor-control-port.js", {});
 
 // Bug 1506 P4: Used by New Identity if cookie protections are
 // not in use.
@@ -225,8 +226,8 @@ function torbutton_disable_all_js() {
  * XXX: intermediate SSL certificates are not cleared.
  */
 // Bug 1506 P4: Needed for New Identity.
-function torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
-    m_tb_control_host, m_tb_control_desc) {
+async function torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_file, m_tb_control_port,
+    m_tb_control_host) {
   const m_tb_domWindowUtils = window.windowUtils;
 
   const m_tb_prefs = Services.prefs;
@@ -426,11 +427,21 @@ function torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control_ipc_f
     const warning = torbutton_get_property_string("torbutton.popup.no_newnym");
     torbutton_log(5, "Torbutton cannot safely newnym. It does not have access to the Tor Control Port.");
     window.alert(warning);
-  } else if (!torbutton_send_ctrl_cmd(window, "SIGNAL NEWNYM\r\n", m_tb_control_pass, m_tb_control_ipc_file,
-      m_tb_control_port, m_tb_control_host, m_tb_control_desc)) {
-    const warning = torbutton_get_property_string("torbutton.popup.no_newnym");
-    torbutton_log(5, "Torbutton was unable to request a new circuit from Tor");
-    window.alert(warning);
+  } else {
+    let ctrl = controller(m_tb_control_ipc_file, m_tb_control_host, m_tb_control_port, m_tb_control_pass,
+      function(err) {
+        // An error has occurred.
+        torbutton_log(1, err);
+        ctrl.close();
+      }
+    );
+    const resp = await ctrl.sendCommand("SIGNAL NEWNYM\r\n");
+    ctrl.close();
+    if (!resp) {
+      const warning = torbutton_get_property_string("torbutton.popup.no_newnym");
+      torbutton_log(5, "Torbutton was unable to request a new circuit from Tor");
+      window.alert(warning);
+    }
   }
 
   torbutton_log(3, "Ending any remaining private browsing sessions.");

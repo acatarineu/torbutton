@@ -534,6 +534,16 @@ info.getMultipleResponseValues = function (message) {
              .filter(utils.identity);
 };
 
+info.sendCommand = function (aControlSocket, cmd) {
+  if (!utils.isString(cmd)) {
+    return utils.rejectPromise("cmd argument should be a string");
+  }
+  return aControlSocket
+    .sendCommand(cmd)
+    .then(response => response.startsWith("250") ? response.substr(4) : null)
+    .catch(() => null);
+};
+
 // __info.getInfo(controlSocket, key)__.
 // Sends GETINFO for a single key. Returns a promise with the result.
 info.getInfo = function (aControlSocket, key) {
@@ -600,11 +610,6 @@ event.watchEvent = function (controlSocket, type, filter, onData) {
 // Things related to the main controller.
 let tor = {};
 
-// __tor.controllerCache__.
-// A map from "unix:socketpath" or "host:port" to controller objects. Prevents
-// redundant instantiation of control sockets.
-tor.controllerCache = {};
-
 // __tor.controller(ipcFile, host, port, password, onError)__.
 // Creates a tor controller at the given ipcFile or host and port, with the
 // given password.
@@ -612,7 +617,8 @@ tor.controllerCache = {};
 tor.controller = function (ipcFile, host, port, password, onError) {
   let socket = io.controlSocket(ipcFile, host, port, password, onError),
       isOpen = true;
-  return { getInfo : key => info.getInfo(socket, key),
+  return { sendCommand : cmd => info.sendCommand(socket, cmd),
+           getInfo : key => info.getInfo(socket, key),
            getConf : key => info.getConf(socket, key),
            watchEvent : (type, filter, onData) =>
                           event.watchEvent(socket, type, filter, onData),
@@ -639,12 +645,8 @@ tor.controller = function (ipcFile, host, port, password, onError) {
 //     // Close the controller permanently
 //     c.close();
 var controller = function (ipcFile, host, port, password, onError) {
-  let dest = (ipcFile) ? "unix:" + ipcFile.path : host + ":" + port,
-      maybeController = tor.controllerCache[dest];
-  return (tor.controllerCache[dest] =
-           (maybeController && maybeController.isOpen()) ?
-             maybeController :
-             tor.controller(ipcFile, host, port, password, onError));
+  log(`Creating controller: ${JSON.stringify([ipcFile, host, port, password])}`);
+  return tor.controller(ipcFile, host, port, password, onError);
 };
 
 // Export the controller function for external use.
