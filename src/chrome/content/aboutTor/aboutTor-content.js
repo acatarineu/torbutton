@@ -24,6 +24,7 @@ let { bindPrefAndInit, show_torbrowser_manual } = Cu.import("resource://torbutto
 var AboutTorListener = {
   kAboutTorLoadedMessage: "AboutTor:Loaded",
   kAboutTorChromeDataMessage: "AboutTor:ChromeData",
+  kAboutTorHideDonationBanner: "AboutTor:HideDonationBanner",
 
   get isAboutTor() {
     return content.document.documentURI.toLowerCase() == "about:tor";
@@ -58,6 +59,28 @@ var AboutTorListener = {
     }
   },
 
+  setupBannerClosing: function () {
+    let that = this;
+    let closer = content.document.getElementById("donation-banner-closer");
+    closer.addEventListener("click", function () {
+      sendAsyncMessage(that.kAboutTorHideDonationBanner);
+    });
+    let link = content.document.querySelector("#donation-banner-message a");
+    link.addEventListener("click", function () {
+      // Wait until page unloads so we don't hide banner before that.
+      content.addEventListener("unload", function () {
+        sendAsyncMessage(that.kAboutTorHideDonationBanner);
+      });
+    });
+    bindPrefAndInit("extensions.torbutton.donation_banner_countdown3",
+                    countdown => {
+                      if (content.document && content.document.body) {
+                        content.document.body.setAttribute(
+                          "show-donation-banner", countdown > 0);
+                      }
+                    });
+  },
+
   onPageLoad: function() {
     // Arrange to update localized text and links.
     bindPrefAndInit("intl.locale.requested", aNewVal => {
@@ -65,6 +88,8 @@ var AboutTorListener = {
         this.onLocaleChange(aNewVal);
       }
     });
+
+    this.setupBannerClosing();
 
     // Add message and event listeners.
     addMessageListener(this.kAboutTorChromeDataMessage, this);
