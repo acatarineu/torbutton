@@ -1,9 +1,9 @@
-/*************************************************************************
+/** ***********************************************************************
  * Copyright (c) 2013, The Tor Project, Inc.
  * See LICENSE for licensing information.
  *
  * vim: set sw=2 sts=2 ts=8 et syntax=javascript:
- * 
+ *
  * Tor check service
  *************************************************************************/
 
@@ -45,62 +45,57 @@ TBTorCheckService.prototype =
   contractID: kMODULE_CONTRACTID,
 
   // method of nsIClassInfo
-  getInterfaces: function(count) {
+  getInterfaces(count) {
     var interfaceList = [Ci.nsIClassInfo];
     count.value = interfaceList.length;
     return interfaceList;
   },
 
   // method of nsIClassInfo
-  getHelperForLanguage: function(count) { return null; },
+  getHelperForLanguage(count) { return null; },
 
   // Public methods.
-  get statusOfTorCheck()
-  {
+  get statusOfTorCheck() {
     return this._statusOfTorCheck;
   },
 
-  set statusOfTorCheck(aStatus)
-  {
+  set statusOfTorCheck(aStatus) {
     this._statusOfTorCheck = aStatus;
   },
 
-  createCheckRequest: function(aAsync)
-  {
-    Cu.importGlobalProperties(["XMLHttpRequest"]);
+  createCheckRequest(aAsync) {
     let req = new XMLHttpRequest();
     let url = Services.prefs.getCharPref("extensions.torbutton.test_url");
     req.open("GET", url, aAsync);
     req.channel.loadFlags |= Ci.nsIRequest.LOAD_BYPASS_CACHE;
     req.overrideMimeType("text/xml");
-    req.timeout = 120000;  // Wait at most two minutes for a response.
+    req.timeout = 120000; // Wait at most two minutes for a response.
     return req;
   },
 
-  parseCheckResponse: function(aReq)
-  {
+  parseCheckResponse(aReq) {
     let ret = 0;
-    if(aReq.status == 200) {
-        if(!aReq.responseXML) {
+    if (aReq.status == 200) {
+        if (!aReq.responseXML) {
             this._logger.log(5, "Check failed! Not text/xml!");
             ret = 1;
         } else {
-          let result = aReq.responseXML.getElementById('TorCheckResult');
+          let result = aReq.responseXML.getElementById("TorCheckResult");
 
-          if(result===null) {
+          if (result === null) {
               this._logger.log(5, "Test failed! No TorCheckResult element");
               ret = 2;
-          } else if(typeof(result.target) == 'undefined' 
+          } else if (typeof(result.target) == "undefined"
                   || result.target === null) {
               this._logger.log(5, "Test failed! No target");
               ret = 3;
-          } else if(result.target === "success") {
+          } else if (result.target === "success") {
               this._logger.log(3, "Test Successful");
               ret = 4;
-          } else if(result.target === "failure") {
+          } else if (result.target === "failure") {
               this._logger.log(5, "Tor test failed!");
               ret = 5;
-          } else if(result.target === "unknown") {
+          } else if (result.target === "unknown") {
               this._logger.log(5, "Tor test failed. TorDNSEL Failure?");
               ret = 6;
           } else {
@@ -112,17 +107,15 @@ TBTorCheckService.prototype =
         if (0 == aReq.status) {
           try {
             var req = aReq.channel.QueryInterface(Ci.nsIRequest);
-            if (req.status == Cr.NS_ERROR_PROXY_CONNECTION_REFUSED)
-            {
+            if (req.status == Cr.NS_ERROR_PROXY_CONNECTION_REFUSED) {
               this._logger.log(5, "Tor test failed. Proxy connection refused");
               ret = 8;
             }
           } catch (e) {}
         }
 
-        if (ret == 0)
-        {
-          this._logger.log(5, "Tor test failed. HTTP Error: "+aReq.status);
+        if (ret == 0) {
+          this._logger.log(5, "Tor test failed. HTTP Error: " + aReq.status);
           ret = -aReq.status;
         }
       }
