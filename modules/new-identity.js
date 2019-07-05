@@ -432,7 +432,6 @@ async function torbutton_do_new_identity(window, m_tb_control_pass, m_tb_control
       function(err) {
         // An error has occurred.
         torbutton_log(1, err);
-        ctrl.close();
       }
     );
     const resp = await ctrl.sendCommand("SIGNAL NEWNYM\r\n");

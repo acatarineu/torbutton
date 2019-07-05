@@ -411,7 +411,7 @@ let setupDisplay = function (ipcFile, host, port, password, enablePrefName) {
         syncDisplayWithSelectedTab(false);
         if (myController) {
           if (stopCollectingIsolationData) {
-	    stopCollectingIsolationData();
+            stopCollectingIsolationData();
           }
           if (stopCollectingBrowserCredentials) {
             stopCollectingBrowserCredentials();
@@ -429,8 +429,9 @@ let setupDisplay = function (ipcFile, host, port, password, enablePrefName) {
             // An error has occurred.
             logger.eclog(5, err);
             logger.eclog(5, "Disabling tor display circuit because of an error.");
-            myController.close();
-            stop();
+            if (myController) {
+              stop();
+            }
           });
           syncDisplayWithSelectedTab(true);
           stopCollectingIsolationData = collectIsolationData(myController, updateCircuitDisplay);

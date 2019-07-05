@@ -233,9 +233,21 @@ io.matchRepliesToCommands = function (asyncSend, dispatcher) {
     }
   });
   // Create and return a version of sendCommand that returns a Promise.
-  return command => new Promise(function (replyCallback, errorCallback) {
-    sendCommand(command, replyCallback, errorCallback);
-  });
+  return {
+    sendCommand(command) {
+      return new Promise(function(replyCallback, errorCallback) {
+        sendCommand(command, replyCallback, errorCallback);
+      });
+    },
+    close() {
+      // Reject pending promises on close
+      for (const [, , errorCallback] of commandQueue) {
+        try {
+          errorCallback(new Error("socket was closed"));
+        } catch (e) {}
+      }
+    },
+  };
 };
 
 // __io.controlSocket(ipcFile, host, port, password, onError)__.
@@ -256,27 +268,57 @@ io.matchRepliesToCommands = function (asyncSend, dispatcher) {
 //     socket.close();
 io.controlSocket = function (ipcFile, host, port, password, onError) {
   // Produce a callback dispatcher for Tor messages.
-  let mainDispatcher = io.callbackDispatcher(),
-      // Open the socket and convert format to Tor messages.
-      socket = io.asyncSocket(ipcFile, host, port,
-                              io.onDataFromOnLine(
-                                   io.onLineFromOnMessage(mainDispatcher.pushMessage)),
-                              onError),
-      // Controllers should send commands terminated by CRLF.
-      writeLine = function (text) { socket.write(text + "\r\n"); },
-      // Create a sendCommand method from writeLine.
-      sendCommand = io.matchRepliesToCommands(writeLine, mainDispatcher),
-      // Create a secondary callback dispatcher for Tor notification messages.
-      notificationDispatcher = io.callbackDispatcher();
+  let mainDispatcher = io.callbackDispatcher();
+  // Open the socket and convert format to Tor messages.
+  let socket;
+  let matchRepliesObj;
+  let close = () => {
+    try {
+      socket.close();
+    } catch (e) {}
+    try {
+      matchRepliesObj.close();
+    } catch (e) {}
+  };
+  socket = io.asyncSocket(
+    ipcFile,
+    host,
+    port,
+    io.onDataFromOnLine(io.onLineFromOnMessage(mainDispatcher.pushMessage)),
+    (e) => {
+      // Once there is an error, close the socket and make pending and future
+      // requests fail
+      close();
+      onError(e);
+    },
+  );
+  let checkSocket = (fn) => {
+    return (...args) => {
+      if (!socket) {
+        throw new Error("socket was closed");
+      }
+      return fn(...args);
+    };
+  };
+  // Controllers should send commands terminated by CRLF.
+  let writeLine = (text) => { socket.write(text + "\r\n"); };
+  // Create a sendCommand method from writeLine.
+  matchRepliesObj = io.matchRepliesToCommands(writeLine, mainDispatcher);
+  // Create a secondary callback dispatcher for Tor notification messages.
+  let notificationDispatcher = io.callbackDispatcher();
   // Pass asynchronous notifications to notification dispatcher.
   mainDispatcher.addCallback(/^650/, notificationDispatcher.pushMessage);
   // Log in to control port.
+  const { sendCommand } = matchRepliesObj;
   sendCommand("authenticate " + (password || ""));
   // Activate needed events.
   sendCommand("setevents stream");
-  return { close : socket.close, sendCommand : sendCommand,
-           addNotificationCallback : notificationDispatcher.addCallback,
-           removeNotificationCallback : notificationDispatcher.removeCallback };
+  return {
+    close,
+    sendCommand: checkSocket(sendCommand),
+    addNotificationCallback: checkSocket(notificationDispatcher.addCallback),
+    removeNotificationCallback: checkSocket(notificationDispatcher.removeCallback),
+  };
 };
 
 // ## utils
@@ -534,14 +576,18 @@ info.getMultipleResponseValues = function (message) {
              .filter(utils.identity);
 };
 
-info.sendCommand = function (aControlSocket, cmd) {
+// __info.sendCommand(controlSocket, cmd)__.
+// Sends a raw command. Returns a promise with the result, or null if it failed.
+info.sendCommand = async function(aControlSocket, cmd) {
   if (!utils.isString(cmd)) {
     return utils.rejectPromise("cmd argument should be a string");
   }
-  return aControlSocket
-    .sendCommand(cmd)
-    .then(response => response.startsWith("250") ? response.substr(4) : null)
-    .catch(() => null);
+  try {
+    const response = await aControlSocket.sendCommand(cmd);
+    return response.startsWith("250") ? response.substr(4) : null;
+  } catch (e) {
+    return null;
+  }
 };
 
 // __info.getInfo(controlSocket, key)__.
@@ -614,7 +660,7 @@ let tor = {};
 // Creates a tor controller at the given ipcFile or host and port, with the
 // given password.
 // onError returns asynchronously whenever a connection error occurs.
-tor.controller = function (ipcFile, host, port, password, onError) {
+tor.controller = function(ipcFile, host, port, password, onError) {
   let socket = io.controlSocket(ipcFile, host, port, password, onError),
       isOpen = true;
   return { sendCommand : cmd => info.sendCommand(socket, cmd),
