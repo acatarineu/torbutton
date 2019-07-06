@@ -31,8 +31,6 @@ let {
 let SecurityPrefs = ChromeUtils.import("resource://torbutton/modules/security-prefs.js", {});
 
 const k_tb_last_browser_version_pref = "extensions.torbutton.lastBrowserVersion";
-const k_tb_browser_update_needed_pref = "extensions.torbutton.updateNeeded";
-const k_tb_last_update_check_pref = "extensions.torbutton.lastUpdateCheck";
 const k_tb_tor_check_failed_topic = "Torbutton:TorCheckFailed";
 
 var m_tb_prefs = Services.prefs;
@@ -203,32 +201,6 @@ torbutton_init = function() {
         return;
     }
     m_tb_wasinited = true;
-
-    // Determine if we are running inside Tor Browser.
-    var cur_version;
-    try {
-      cur_version = m_tb_prefs.getCharPref("torbrowser.version");
-      torbutton_log(3, "This is a Tor Browser");
-    } catch(e) {
-      torbutton_log(3, "This is not a Tor Browser: "+e);
-    }
-
-    // If the Tor Browser version has changed since the last time Torbutton
-    // was loaded, reset the version check preferences in order to avoid
-    // incorrectly reporting that the browser needs to be updated.
-    var last_version;
-    try {
-      last_version = m_tb_prefs.getCharPref(k_tb_last_browser_version_pref);
-    } catch (e) {}
-    if (cur_version != last_version) {
-      m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, false);
-      if (m_tb_prefs.prefHasUserValue(k_tb_last_update_check_pref)) {
-        m_tb_prefs.clearUserPref(k_tb_last_update_check_pref);
-      }
-
-      if (cur_version)
-        m_tb_prefs.setCharPref(k_tb_last_browser_version_pref, cur_version);
-    }
 
     let tlps;
     try {
@@ -437,96 +409,6 @@ function torbutton_confirm_plugins() {
       }
     }
   }
-}
-
-// Bug 1506 P4: Checking for Tor Browser updates is pretty important,
-// probably even as a fallback if we ever do get a working updater.
-function torbutton_do_async_versioncheck() {
-  if (!m_tb_prefs.getBoolPref("extensions.torbutton.versioncheck_enabled")) {
-    return;
-  }
-
-  // Suppress update check if done recently.
-  const kMinSecsBetweenChecks = 120 * 60; // 2.0 hours
-  var now = Date.now() / 1000;
-  var lastCheckTime;
-  try {
-    lastCheckTime = parseFloat(m_tb_prefs.getCharPref(k_tb_last_update_check_pref));
-    if (isNaN(lastCheckTime))
-      lastCheckTime = undefined;
-  } catch (e) {}
-
-  if (lastCheckTime && ((now - lastCheckTime) < kMinSecsBetweenChecks))
-    return;
-
-  m_tb_prefs.setCharPref(k_tb_last_update_check_pref, now);
-
-  torbutton_log(3, "Checking version with socks port: "
-          +m_tb_prefs.getIntPref("network.proxy.socks_port"));
-  try {
-    var req = new XMLHttpRequest();
-    var url = m_tb_prefs.getCharPref("extensions.torbutton.versioncheck_url");
-    req.open('GET', url, true);
-    req.channel.loadFlags |= Ci.nsIRequest.LOAD_BYPASS_CACHE;
-    req.overrideMimeType("text/json");
-    req.onreadystatechange = function (oEvent) {
-      if (req.readyState === 4) {
-        if(req.status == 200) {
-          if(!req.responseText) {
-            torbutton_log(5, "Version check failed! No JSON present!");
-            return -1;
-          }
-          try {
-            var version_list = JSON.parse(req.responseText);
-            var my_version = m_tb_prefs.getCharPref("torbrowser.version");
-            var platformSuffix;
-            var platform = Services.appinfo.OS;
-            switch (platform) {
-              case "WINNT":
-                platformSuffix = "Windows";
-                break;
-              case "Darwin":
-                platformSuffix = "MacOS";
-                break;
-              case "Linux":
-              case "Android":
-                platformSuffix = platform;
-                break;
-            }
-            if (platformSuffix)
-              my_version += "-" + platformSuffix;
-
-            if (version_list.indexOf(my_version) >= 0) {
-              torbutton_log(3, "Version check passed.");
-              m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, false);
-              return;
-            }
-            torbutton_log(5, "Your Tor Browser is out of date.");
-            m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, true);
-            return;
-          } catch(e) {
-            torbutton_log(5, "Version check failed! JSON parsing error: "+e);
-            return;
-          }
-        } else if (req.status == 404) {
-          // We're going to assume 404 means the service is not implemented yet.
-          torbutton_log(3, "Version check failed. Versions file is 404.");
-          return -1;
-        }
-        torbutton_log(5, "Version check failed! Web server error: "+req.status);
-        return -1;
-      }
-    };
-    req.send(null);
-  } catch(e) {
-    if(e.result == 0x80004005) { // NS_ERROR_FAILURE
-      torbutton_log(5, "Version check failed! Is tor running?");
-      return -1;
-    }
-    torbutton_log(5, "Version check failed! Tor internal error: "+e);
-    return -1;
-  }
-
 }
 
 // Bug 1506 P4: Control port interaction. Needed for New Identity.
@@ -1513,16 +1395,6 @@ function torbutton_do_startup()
     }
 }
 
-// Perform version check when a new tab is opened.
-function torbutton_new_tab(event)
-{
-    // listening for new tabs
-    torbutton_log(3, "New tab");
-
-    /* Perform the version check on new tab, module timer */
-    torbutton_do_async_versioncheck();
-}
-
 // Bug 1506 P3: Used to decide if we should resize the window.
 //
 // Returns true if the window wind is neither maximized, full screen,
@@ -1609,8 +1481,6 @@ function torbutton_new_window(event)
     if (!m_tb_wasinited) {
         torbutton_init();
     }
-    // Add tab open listener..
-    browser.tabContainer.addEventListener("TabOpen", torbutton_new_tab, false);
 
     torbutton_do_startup();
 
@@ -1621,9 +1491,6 @@ function torbutton_new_window(event)
       progress.addProgressListener(torbutton_resizelistener,
                                    Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
     }
-
-    // Check the version on every new window. We're already pinging check in these cases.
-    torbutton_do_async_versioncheck();
 
     torbutton_do_tor_check();
 }
