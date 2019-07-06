@@ -51,9 +51,6 @@ function cleanupCookies() {
   }
 }
 
-const k_tb_last_browser_version_pref = "extensions.torbutton.lastBrowserVersion";
-const k_tb_browser_update_needed_pref = "extensions.torbutton.updateNeeded";
-const k_tb_last_update_check_pref = "extensions.torbutton.lastUpdateCheck";
 const k_tb_tor_check_failed_topic = "Torbutton:TorCheckFailed";
 
 let m_tb_control_pass;
@@ -86,28 +83,6 @@ function torbutton_read_authentication_cookie(path) {
 function torbutton_init() {
   const m_tb_prefs = Services.prefs;
   SecurityPrefs.initialize();
-  // Determine if we are running inside Tor Browser.
-  var cur_version;
-  try {
-    cur_version = m_tb_prefs.getCharPref("torbrowser.version");
-    torbutton_log(3, "This is a Tor Browser");
-  } catch (e) {
-    torbutton_log(3, "This is not a Tor Browser: " + e);
-  }
-
-  // If the Tor Browser version has changed since the last time Torbutton
-  // was loaded, reset the version check preferences in order to avoid
-  // incorrectly reporting that the browser needs to be updated.
-  var last_version = m_tb_prefs.getCharPref(k_tb_last_browser_version_pref, undefined);
-  if (cur_version != last_version) {
-    m_tb_prefs.setBoolPref(k_tb_browser_update_needed_pref, false);
-    if (m_tb_prefs.prefHasUserValue(k_tb_last_update_check_pref)) {
-      m_tb_prefs.clearUserPref(k_tb_last_update_check_pref);
-    }
-
-    if (cur_version)
-      m_tb_prefs.setCharPref(k_tb_last_browser_version_pref, cur_version);
-  }
 
   // Bug 1506 P4: These vars are very important for New Identity
   var environ = Cc["@mozilla.org/process/environment;1"]
