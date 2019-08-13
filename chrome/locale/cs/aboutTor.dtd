@@ -28,3 +28,8 @@
 
 <!ENTITY aboutTor.newsletter.tagline "Nechte si posílat nejnovější informace o Toru.">
 <!ENTITY aboutTor.newsletter.link_text "Přihlaste se k odběru zpravodaje Toru.">
+<!ENTITY aboutTor.donationBanner.line2e "Pomozte Toru sílit.">
+<!ENTITY aboutTor.donationBanner.buttonA "Přispějte">
+
+<!ENTITY aboutTor.donationBanner3.line1 "Automatické měsíční příspěvky pomáhají Tor rozvíjet.">
+<!ENTITY aboutTor.donationBanner3.line2 "Přispějte na obranu soukromí.">

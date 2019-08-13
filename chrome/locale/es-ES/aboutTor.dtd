@@ -28,3 +28,8 @@
 
 <!ENTITY aboutTor.newsletter.tagline "Recibe las últimas noticias de Tor directamente en tu bandeja de entrada.">
 <!ENTITY aboutTor.newsletter.link_text "Inscríbete en Tor News.">
+<!ENTITY aboutTor.donationBanner.line2e "Mantén fuerte a Tor.">
+<!ENTITY aboutTor.donationBanner.buttonA "Dona ahora.">
+
+<!ENTITY aboutTor.donationBanner3.line1 "Las donaciones mensuales automáticas mantienen a Tor.">
+<!ENTITY aboutTor.donationBanner3.line2 "Conviértete en un Defensor de la Privacidad, hoy.">

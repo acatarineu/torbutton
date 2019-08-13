@@ -28,3 +28,8 @@
 
 <!ENTITY aboutTor.newsletter.tagline "Dapatkan berita Tor terbaru langsung ke inbox Anda.">
 <!ENTITY aboutTor.newsletter.link_text "Daftar untuk mendapatkan Berita Tor.">
+<!ENTITY aboutTor.donationBanner.line2e "Bantu pengembangan Tor.">
+<!ENTITY aboutTor.donationBanner.buttonA "Donasi Sekarang">
+
+<!ENTITY aboutTor.donationBanner3.line1 "Donasi bulanan otomatis untuk pengembangan Tor.">
+<!ENTITY aboutTor.donationBanner3.line2 "Jadilah Pahlawan Privasi hari ini.">

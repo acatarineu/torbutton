@@ -28,3 +28,8 @@
 
 <!ENTITY aboutTor.newsletter.tagline "Fáðu nýjustu fréttir af Tor beint í pósthólfið þitt.">
 <!ENTITY aboutTor.newsletter.link_text "Skráðu þig til að fá Tor-fréttir.">
+<!ENTITY aboutTor.donationBanner.line2e "Höldum Tor sterku">
+<!ENTITY aboutTor.donationBanner.buttonA "Styrkja núna">
+
+<!ENTITY aboutTor.donationBanner3.line1 "Sjálfvirkar mánaðarlegar greiðslur eru mikill styrkur fyrir Tor.">
+<!ENTITY aboutTor.donationBanner3.line2 "Gerstu strax baráttumaður fyrir friðhelgi einkalífsins.">
