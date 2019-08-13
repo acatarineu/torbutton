@@ -17,3 +17,4 @@
 <!ENTITY torbutton.cookiedialog.removeAllBut "Indeparteaza tot, mai putin protejat">
 <!ENTITY torbutton.cookiedialog.saveAllCookies "Protejeaza Cookie-urile noi">
 <!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Nu proteja Cookie-urile noi">
+<!ENTITY torbutton.prefs.sec_restore_defaults "Restaurează setările implicite">
