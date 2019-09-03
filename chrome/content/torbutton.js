@@ -1515,8 +1515,6 @@ function torbutton_update_fingerprinting_prefs() {
     m_tb_prefs.setBoolPref("plugin.expose_full_path", !mode);
     m_tb_prefs.setBoolPref("browser.zoom.siteSpecific", !mode);
 
-    m_tb_prefs.setBoolPref("extensions.torbutton.resize_new_windows", mode);
-
     // Force prefs to be synced to disk
     Services.prefs.savePrefFile(null);
 }
