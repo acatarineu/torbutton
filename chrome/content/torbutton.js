@@ -92,6 +92,7 @@ var torbutton_unique_pref_observer =
         m_tb_prefs.addObserver("plugin.disable", this, false);
         m_tb_prefs.addObserver("privacy.firstparty.isolate", this, false);
         m_tb_prefs.addObserver("privacy.resistFingerprinting", this, false);
+        m_tb_prefs.addObserver("privacy.resistFingerprinting.letterboxing", this, false);
 
         // We observe xpcom-category-entry-added for plugins w/ Gecko-Content-Viewers
         var observerService = Services.obs;
@@ -107,6 +108,7 @@ var torbutton_unique_pref_observer =
         m_tb_prefs.removeObserver("plugin.disable", this);
         m_tb_prefs.removeObserver("privacy.firstparty.isolate", this);
         m_tb_prefs.removeObserver("privacy.resistFingerprinting", this);
+        m_tb_prefs.removeObserver("privacy.resistFingerprinting.letterboxing", this);
 
         var observerService = Services.obs;
         observerService.removeObserver(this, "xpcom-category-entry-added");
@@ -156,6 +158,7 @@ var torbutton_unique_pref_observer =
                 torbutton_use_nontor_proxy();
                 break;
             case "privacy.resistFingerprinting":
+            case "privacy.resistFingerprinting.letterboxing":
                 torbutton_update_fingerprinting_prefs();
                 break;
             case "privacy.firstparty.isolate":
@@ -1508,14 +1511,14 @@ function torbutton_update_disk_prefs() {
 
 function torbutton_update_fingerprinting_prefs() {
     var mode = m_tb_prefs.getBoolPref("privacy.resistFingerprinting");
+    var letterboxing = m_tb_prefs.getBoolPref("privacy.resistFingerprinting.letterboxing", false);
 
     m_tb_prefs.setBoolPref("webgl.disable-extensions", mode);
     m_tb_prefs.setBoolPref("dom.network.enabled", !mode);
     m_tb_prefs.setBoolPref("dom.enable_performance", !mode);
     m_tb_prefs.setBoolPref("plugin.expose_full_path", !mode);
     m_tb_prefs.setBoolPref("browser.zoom.siteSpecific", !mode);
-
-    m_tb_prefs.setBoolPref("extensions.torbutton.resize_new_windows", mode);
+    m_tb_prefs.setBoolPref("extensions.torbutton.resize_new_windows", mode && !letterboxing);
 
     // Force prefs to be synced to disk
     Services.prefs.savePrefFile(null);
