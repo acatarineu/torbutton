@@ -217,10 +217,10 @@ var getDomainForBrowser = (browser) => {
   // Bug 22538: For neterror or certerror, get firstPartyDomain causing it from the u param
   if (firstPartyDomain === k_tb_about_uri_first_party_domain) {
     let knownErrors = ["about:neterror", "about:certerror"];
-    let origin = browser.contentPrincipal.origin || '';
-    if (knownErrors.some(x => origin.startsWith(x))) {
+    let spec = browser.contentPrincipal.URI.spec || '';
+    if (knownErrors.some(x => spec.startsWith(x))) {
       try {
-        let urlOrigin = new URL(origin);
+        let urlOrigin = new URL(spec);
         let { hostname } = new URL(urlOrigin.searchParams.get('u'));
         if (hostname) {
           try {
