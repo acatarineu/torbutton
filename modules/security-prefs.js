@@ -4,6 +4,11 @@
 
 let { getBoolPref, setBoolPref, getIntPref, setIntPref } =
     ChromeUtils.import("resource://gre/modules/Services.jsm", {}).Services.prefs;
+
+// Used for detecting the current system architecture
+let { XPCOMABI } =
+    Cu.import("resource://gre/modules/Services.jsm", {}).Services.appinfo;
+
 let { bindPref, bindPrefAndInit } =
     ChromeUtils.import("resource://torbutton/modules/utils.js", {});
 let logger = Cc["@torproject.org/torbutton-logger;1"]
@@ -33,6 +38,7 @@ const kSecuritySettings = {
 // The Security Settings prefs in question.
 const kSliderPref = "extensions.torbutton.security_slider";
 const kCustomPref = "extensions.torbutton.security_custom";
+const kSliderMigration = "extensions.torbutton.security_slider_migration";
 
 // ### Prefs
 
@@ -127,6 +133,19 @@ var initialize = function () {
       getIntPref("extensions.torbutton.security_slider") === 3) {
     setIntPref("extensions.torbutton.security_slider", 2);
     write_setting_to_prefs(2);
+  }
+
+  // Revert #31616 and #31140 fixes
+  if (getIntPref(kSliderMigration, 0) < 1) {
+    // Only migrate if security settings are the default ones and assume
+    // the user did not set ion, baselinejit or native_regexp manually to false.
+    if (getBoolPref(kCustomPref) && XPCOMABI.split("-")[0] == "aarch64" &&
+        getIntPref(kSliderPref) === 4) {
+      setBoolPref("javascript.options.ion", true);
+      setBoolPref("javascript.options.baselinejit", true);
+      setBoolPref("javascript.options.native_regexp", true);
+    }
+    setIntPref(kSliderMigration, 1);
   }
   log(4, "security-prefs.js initialization complete");
 };
