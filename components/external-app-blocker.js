@@ -12,11 +12,18 @@
  * handle an URL (e.g., when the user clicks on a mailto: URL).
  *************************************************************************/
 
-const { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const { PromptUtils } = ChromeUtils.import("resource://gre/modules/SharedPromptUtils.jsm");
+const { PromptUtils } = ChromeUtils.import(
+  "resource://gre/modules/SharedPromptUtils.jsm"
+);
 
-let { torbutton_get_property_string } = ChromeUtils.import("resource://torbutton/modules/utils.js", {});
+let { torbutton_get_property_string } = ChromeUtils.import(
+  "resource://torbutton/modules/utils.js",
+  {}
+);
 
 // Module specific constants
 const kMODULE_NAME = "Torbutton External App Handler";
@@ -26,16 +33,19 @@ const kMODULE_CID = Components.ID("3da0269f-fc29-4e9e-a678-c3b1cafcf13f");
 const kInterfaces = [Ci.nsIObserver, Ci.nsIClassInfo];
 
 function ExternalAppBlocker() {
-  this.logger = Cc["@torproject.org/torbutton-logger;1"]
-      .getService(Ci.nsISupports).wrappedJSObject;
+  this.logger = Cc["@torproject.org/torbutton-logger;1"].getService(
+    Ci.nsISupports
+  ).wrappedJSObject;
   this.logger.log(3, "Component Load 0: New ExternalAppBlocker.");
 }
 
-ExternalAppBlocker.prototype =
-{
+ExternalAppBlocker.prototype = {
   _helperAppLauncher: undefined,
 
-  QueryInterface: ChromeUtils.generateQI([Ci.nsIObserver, Ci.nsIHelperAppWarningDialog]),
+  QueryInterface: ChromeUtils.generateQI([
+    Ci.nsIObserver,
+    Ci.nsIHelperAppWarningDialog,
+  ]),
 
   // make this an nsIClassInfo object
   flags: Ci.nsIClassInfo.DOM_OBJECT,
@@ -44,17 +54,18 @@ ExternalAppBlocker.prototype =
   classID: kMODULE_CID,
 
   // method of nsIClassInfo
-  getInterfaces: function(count) {
+  getInterfaces(count) {
     count.value = kInterfaces.length;
     return kInterfaces;
   },
 
   // method of nsIClassInfo
-  getHelperForLanguage: function(count) { return null; },
+  getHelperForLanguage(count) {
+    return null;
+  },
 
   // method of nsIHelperAppWarningDialog
-  maybeShow: function(aLauncher, aWindowContext)
-  {
+  maybeShow(aLauncher, aWindowContext) {
     // Hold a reference to the object that called this component. This is
     // important not just because we need to later invoke the
     // continueRequest() or cancelRequest() callback on aLauncher, but also
@@ -76,7 +87,7 @@ ExternalAppBlocker.prototype =
    * on chrome://global/content/commonDialog.xul as well as some of the code
    * in resource://gre/modules/SharedPromptUtils.jsm.
    */
-  _showPrompt: function(aWindowContext) {
+  _showPrompt(aWindowContext) {
     let parentWin;
     try {
       parentWin = aWindowContext.getInterface(Ci.nsIDOMWindow);
@@ -87,20 +98,22 @@ ExternalAppBlocker.prototype =
     let title = torbutton_get_property_string("torbutton.popup.external.title");
     let app = torbutton_get_property_string("torbutton.popup.external.app");
     let note = torbutton_get_property_string("torbutton.popup.external.note");
-    let suggest = torbutton_get_property_string("torbutton.popup.external.suggest");
+    let suggest = torbutton_get_property_string(
+      "torbutton.popup.external.suggest"
+    );
     let launch = torbutton_get_property_string("torbutton.popup.launch");
     let cancel = torbutton_get_property_string("torbutton.popup.cancel");
     let dontask = torbutton_get_property_string("torbutton.popup.dontask");
 
     let args = {
-      promptType:       "confirmEx",
-      title:            title,
-      text:             app+note+suggest+" ",
-      checkLabel:       dontask,
-      checked:          false,
-      ok:               false,
-      button0Label:     launch,
-      button1Label:     cancel,
+      promptType: "confirmEx",
+      title,
+      text: app + note + suggest + " ",
+      checkLabel: dontask,
+      checked: false,
+      ok: false,
+      button0Label: launch,
+      button1Label: cancel,
       defaultButtonNum: 1, // Cancel
       buttonNumClicked: 1, // Cancel
       enableDelay: true,
@@ -108,8 +121,13 @@ ExternalAppBlocker.prototype =
 
     let propBag = PromptUtils.objectToPropBag(args);
     let uri = "chrome://global/content/commonDialog.xul";
-    let promptWin = Services.ww.openWindow(parentWin, uri, "_blank",
-                                    "centerscreen,chrome,titlebar", propBag);
+    let promptWin = Services.ww.openWindow(
+      parentWin,
+      uri,
+      "_blank",
+      "centerscreen,chrome,titlebar",
+      propBag
+    );
     promptWin.addEventListener("load", aEvent => {
       promptWin.addEventListener("unload", aEvent => {
         PromptUtils.propBagToObject(propBag, args);
@@ -118,16 +136,18 @@ ExternalAppBlocker.prototype =
           // Save the checkbox value and tell the browser's external helper app
           // module about the user's choice.
           if (args.checked) {
-            Services.prefs.setBoolPref("extensions.torbutton.launch_warning",
-                                       false);
+            Services.prefs.setBoolPref(
+              "extensions.torbutton.launch_warning",
+              false
+            );
           }
 
           this._helperAppLauncher.continueRequest();
         } else {
           this._helperAppLauncher.cancelRequest(Cr.NS_BINDING_ABORTED);
         }
-      }, false);
-    }, false);
+      });
+    });
   },
 };
 
