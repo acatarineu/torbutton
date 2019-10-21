@@ -7,6 +7,8 @@
  * about:tor content script
  *************************************************************************/
 
+/* eslint-env mozilla/frame-script */
+
 /*
  * The following about:tor IPC messages are exchanged by this code and
  * the code in torbutton.js:
@@ -16,8 +18,10 @@
 
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-let { bindPrefAndInit, show_torbrowser_manual } = ChromeUtils.import("resource://torbutton/modules/utils.js", {});
-
+let { bindPrefAndInit, show_torbrowser_manual } = ChromeUtils.import(
+  "resource://torbutton/modules/utils.js",
+  {}
+);
 
 var AboutTorListener = {
   kAboutTorLoadedMessage: "AboutTor:Loaded",
@@ -27,13 +31,14 @@ var AboutTorListener = {
     return content.document.documentURI.toLowerCase() == "about:tor";
   },
 
-  init: function(aChromeGlobal) {
+  init(aChromeGlobal) {
     aChromeGlobal.addEventListener("AboutTorLoad", this, false, true);
   },
 
-  handleEvent: function(aEvent) {
-    if (!this.isAboutTor)
+  handleEvent(aEvent) {
+    if (!this.isAboutTor) {
       return;
+    }
 
     switch (aEvent.type) {
       case "AboutTorLoad":
@@ -45,9 +50,10 @@ var AboutTorListener = {
     }
   },
 
-  receiveMessage: function(aMessage) {
-    if (!this.isAboutTor)
+  receiveMessage(aMessage) {
+    if (!this.isAboutTor) {
       return;
+    }
 
     switch (aMessage.name) {
       case this.kAboutTorChromeDataMessage:
@@ -56,7 +62,7 @@ var AboutTorListener = {
     }
   },
 
-  onPageLoad: function() {
+  onPageLoad() {
     // Arrange to update localized text and links.
     bindPrefAndInit("intl.locale.requested", aNewVal => {
       if (aNewVal !== null) {
@@ -72,48 +78,53 @@ var AboutTorListener = {
     sendAsyncMessage(this.kAboutTorLoadedMessage);
   },
 
-  onPageHide: function() {
+  onPageHide() {
     removeEventListener("resize", this, false);
     removeEventListener("pagehide", this, false);
     removeMessageListener(this.kAboutTorChromeDataMessage, this);
   },
 
-  onChromeDataUpdate: function(aData) {
+  onChromeDataUpdate(aData) {
     let body = content.document.body;
 
     // Update status: tor on/off, Tor Browser manual shown.
-    if (aData.torOn)
+    if (aData.torOn) {
       body.setAttribute("toron", "yes");
-    else
+    } else {
       body.removeAttribute("toron");
+    }
 
-    if (show_torbrowser_manual())
+    if (show_torbrowser_manual()) {
       body.setAttribute("showmanual", "yes");
-    else
+    } else {
       body.removeAttribute("showmanual");
+    }
 
-    if (aData.updateChannel)
+    if (aData.updateChannel) {
       body.setAttribute("updatechannel", aData.updateChannel);
-    else
+    } else {
       body.removeAttribute("updatechannel");
+    }
 
     if (aData.hasBeenUpdated) {
       body.setAttribute("hasbeenupdated", "yes");
-      content.document.getElementById("update-infolink").setAttribute("href",
-                                                      aData.updateMoreInfoURL);
+      content.document
+        .getElementById("update-infolink")
+        .setAttribute("href", aData.updateMoreInfoURL);
     }
 
-    if (aData.mobile)
+    if (aData.mobile) {
       body.setAttribute("mobile", "yes");
+    }
 
     // Setting body.initialized="yes" displays the body.
     body.setAttribute("initialized", "yes");
   },
 
-  onLocaleChange: function(aLocale) {
+  onLocaleChange(aLocale) {
     // Set Tor Browser manual link.
     content.document.getElementById("manualLink").href =
-                            "https://tb-manual.torproject.org/" + aLocale;
+      "https://tb-manual.torproject.org/" + aLocale;
 
     // Display the Tor Browser product name and version.
     try {
@@ -123,12 +134,14 @@ var AboutTorListener = {
       let tbbVersion = Services.prefs.getCharPref("torbrowser.version");
       let elem = content.document.getElementById("torbrowser-version");
 
-      while (elem.firstChild)
-        elem.removeChild(elem.firstChild);
-      elem.appendChild(content.document.createTextNode(productName + ' '
-                       + tbbVersion));
+      while (elem.firstChild) {
+        elem.firstChild.remove();
+      }
+      elem.appendChild(
+        content.document.createTextNode(productName + " " + tbbVersion)
+      );
     } catch (e) {}
-  }
+  },
 };
 
 AboutTorListener.init(this);
