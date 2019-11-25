@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "شبکه جدید Tor برای این سایت">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "تنظیمات شبکه Tor">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "بررسی بروز رسانی مرورگر Tor">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "حفاظت کوکی ها...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "جهت شروع دكمه تُرکليک کنيد">
 <!ENTITY torbutton.prefs.security_settings "تنظیمات امنیتی مرورگر Tor">
-<!ENTITY torbutton.cookiedialog.title "مديريت حفاظت کلوچک‌ها">
-<!ENTITY torbutton.cookiedialog.lockCol "حفاظت شده">
-<!ENTITY torbutton.cookiedialog.domainCol "ميزبان">
-<!ENTITY torbutton.cookiedialog.nameCol "نام">
-<!ENTITY torbutton.cookiedialog.pathCol "مسير">
-<!ENTITY torbutton.cookiedialog.protectCookie "حفاظت از کلوچک">
-<!ENTITY torbutton.cookiedialog.removeCookie "حذف کلوچک">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "عدم حفاظت از کلوچک">
-<!ENTITY torbutton.cookiedialog.removeAllBut "حذف تمام کلوچک‌های حفاظت نشده">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "حفاظت از کلوچک‌های جديد">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "عدم حفاظت از کلوچک‌های جديد">
 <!ENTITY torbutton.prefs.sec_caption "سطح امنیت">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "نوار لغزنده امنیتی به شما اجازه می‌دهد که مشخصه‌های خاص مرورگر را غیرفعال کنید که ممکن است مرورگر شما را در برابر تلاش‌های هک آسیب‌پذیر سازد.">
 <!ENTITY torbutton.prefs.sec_standard_label "استاندارد">

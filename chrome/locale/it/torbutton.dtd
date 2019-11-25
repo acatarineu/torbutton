@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Nuovo Circuito Tor per questo Sito">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Impostazioni della rete Tor...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Controllo degli aggiornamenti di Tor Browser...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "A">
-<!ENTITY torbutton.context_menu.cookieProtections "Protezioni dei Cookie...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Fai clic per inizializzare Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Impostazioni di Sicurezza Tor Browser">
-<!ENTITY torbutton.cookiedialog.title "Gestisci protezione Cookies">
-<!ENTITY torbutton.cookiedialog.lockCol "Protetto">
-<!ENTITY torbutton.cookiedialog.domainCol "Host">
-<!ENTITY torbutton.cookiedialog.nameCol "Nome">
-<!ENTITY torbutton.cookiedialog.pathCol "Percorso">
-<!ENTITY torbutton.cookiedialog.protectCookie "Proteggi Cookie">
-<!ENTITY torbutton.cookiedialog.removeCookie "Rimuovi Cookie">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Interrompi protezione cookie">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Rimuovi tutti tranne quelli protetti">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Proteggi i nuovi cookie">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Non proteggere i nuovi cookie">
 <!ENTITY torbutton.prefs.sec_caption "Livello di Sicurezza">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Il Security Slider ti permette di disabilitare determinate funzionalità del browser che potrebbero renderlo più vulnerabile a tentativi di attacco.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standard">

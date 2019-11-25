@@ -1,20 +1,3 @@
 <!ENTITY torbutton.context_menu.new_identity "Jauna identitāte">
 <!ENTITY torbutton.context_menu.new_identity_key "I">
-<!ENTITY torbutton.context_menu.networksettings "Atvērt tīkla iestatījumus...">
-<!ENTITY torbutton.context_menu.downloadUpdate "Lejuplādēt Pārlūka Tor pakotnes jauninājumu...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Aizsardzība no sīkdatnēm">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Noklikšķināt, lai inicializētu Torbutton">
-<!ENTITY torbutton.cookiedialog.title "Pārvaldīt aizsardzību no sīkdatnēm">
-<!ENTITY torbutton.cookiedialog.lockCol "Aizsargāts">
-<!ENTITY torbutton.cookiedialog.domainCol "Viesotājs">
-<!ENTITY torbutton.cookiedialog.nameCol "Nosaukums">
-<!ENTITY torbutton.cookiedialog.pathCol "Ceļš">
-<!ENTITY torbutton.cookiedialog.protectCookie "Aizsargāt sīkdatni">
-<!ENTITY torbutton.cookiedialog.removeCookie "Noņemt sīkdatni">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Noņemt sīkdatnes aizsardzību">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Noņemt visas, izņemot aizsargātās">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Aizsargāt jaunās sīkdatnes">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Neaizsargāt jaunās sīkdatnes">
 <!ENTITY torbutton.prefs.sec_restore_defaults "Atjaunot noklusējuma vērtības">

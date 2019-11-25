@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "এই সাইটের জন্য নতুন টর সার্কিট">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "টর নেটওয়ার্ক সেটিংস ...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "টর ব্রাউজার আপডেটের জন্য চেক করুন ...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "কুকি প্রোটেকশন ...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Torbutton আরম্ভ করার জন্য ক্লিক করুন">
 <!ENTITY torbutton.prefs.security_settings "টর ব্রাউজার নিরাপত্তা সেটিংস">
-<!ENTITY torbutton.cookiedialog.title "কুকি প্রোটেকশনগুলি পরিচালনা করুন">
-<!ENTITY torbutton.cookiedialog.lockCol "রক্ষিত">
-<!ENTITY torbutton.cookiedialog.domainCol "নিমন্ত্রণকর্তা">
-<!ENTITY torbutton.cookiedialog.nameCol "নাম">
-<!ENTITY torbutton.cookiedialog.pathCol "Path">
-<!ENTITY torbutton.cookiedialog.protectCookie "কুকি রক্ষা করুন">
-<!ENTITY torbutton.cookiedialog.removeCookie "কুকি সরান">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "অরক্ষিত কুকি">
-<!ENTITY torbutton.cookiedialog.removeAllBut "সমস্ত কিন্তু সুরক্ষিত সরান">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "নতুন কুকি সংরক্ষণ করুন">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "নতুন কুকি রক্ষা করবেন না">
 <!ENTITY torbutton.prefs.sec_caption "নিরাপত্তার মাত্রা">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "সিকিউরিটি স্লাইডার আপনাকে নির্দিষ্ট ব্রাউজারের বৈশিষ্ট্যগুলি অক্ষম করতে দেয় যা আপনার ব্রাউজারকে হ্যাকিংয়ের প্রচেষ্টাগুলিকে আরও দুর্বল করে তুলতে পারে।">
 <!ENTITY torbutton.prefs.sec_standard_label "মান">

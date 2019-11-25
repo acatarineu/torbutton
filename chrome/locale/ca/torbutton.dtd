@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Nou circuit Tor per a aquest lloc">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Configuració de la xarxa Tor…">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Cerca una actualització del navegador Tor...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "A">
-<!ENTITY torbutton.context_menu.cookieProtections "Proteccions de les Galetes...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Feu clic per a iniciar Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Paràmetres de seguretat del navegador Tor">
-<!ENTITY torbutton.cookiedialog.title "Gestiona les proteccions de les galetes">
-<!ENTITY torbutton.cookiedialog.lockCol "Protegit">
-<!ENTITY torbutton.cookiedialog.domainCol "Allotjador">
-<!ENTITY torbutton.cookiedialog.nameCol "Nom">
-<!ENTITY torbutton.cookiedialog.pathCol "Camí">
-<!ENTITY torbutton.cookiedialog.protectCookie "Protegeix la galeta">
-<!ENTITY torbutton.cookiedialog.removeCookie "Elimina la galeta">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "No protegeixis la galeta">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Elimina-les totes menys les protegides">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Protegeix les galetes noves">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "No protegeixis les galetes noves">
 <!ENTITY torbutton.prefs.sec_caption "Nivell de seguretat">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "El control lliscant de seguretat permet desactivar certes funcions del navegador que poden fer que sigui més vulnerable als intents d'atac de furoners.">
 <!ENTITY torbutton.prefs.sec_standard_label "Estàndard">

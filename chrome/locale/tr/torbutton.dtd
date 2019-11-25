@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Bu sitenin Tor devresini yenile">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Tor Ağı Ayarları...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Tor Browser Güncelleme Denetimi...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Çerez Koruması...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Torbutton uygulamasını başlatmak için tıklayın">
 <!ENTITY torbutton.prefs.security_settings "Tor Browser Güvenlik Düzeyi Ayarı">
-<!ENTITY torbutton.cookiedialog.title "Çerez Koruması Yönetimi">
-<!ENTITY torbutton.cookiedialog.lockCol "Korunmuş">
-<!ENTITY torbutton.cookiedialog.domainCol "Sunucu">
-<!ENTITY torbutton.cookiedialog.nameCol "Ad">
-<!ENTITY torbutton.cookiedialog.pathCol "Yol">
-<!ENTITY torbutton.cookiedialog.protectCookie "Çerezi Koru">
-<!ENTITY torbutton.cookiedialog.removeCookie "Çerezi Sil">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Çerez Korumasını Kaldır">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Korunanlar Dışında Tümünü Sil">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Yeni Çerezler Korunsun">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Yeni Çerezler Korunmasın">
 <!ENTITY torbutton.prefs.sec_caption "Güvenlik Düzeyi">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Güvenlik ayarı ile belirli web tarayıcı özeliklerini kapatabilirsiniz. Ancak bu durumda web tarayıcınız saldırılara karşı daha korumasız olur.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standart">

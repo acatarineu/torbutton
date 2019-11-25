@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Tor zirkuitu berria gune honetarako">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Tor Sarearen Ezarpenak...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Tor Browser eguneraketa egiaztatu">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Cookie babesak...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Sakatu Torbutton abiarazteko">
 <!ENTITY torbutton.prefs.security_settings "Tor Nagibatzailearen Segurtasun Ezarpenak">
-<!ENTITY torbutton.cookiedialog.title "Cookie Babesak kudeatu">
-<!ENTITY torbutton.cookiedialog.lockCol "Babestuta">
-<!ENTITY torbutton.cookiedialog.domainCol "Ostalaria">
-<!ENTITY torbutton.cookiedialog.nameCol "Izena">
-<!ENTITY torbutton.cookiedialog.pathCol "Bidea">
-<!ENTITY torbutton.cookiedialog.protectCookie "Cookiea babestu">
-<!ENTITY torbutton.cookiedialog.removeCookie "Cookiea kendu">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Cookiea ez babestu">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Denak kendu babestutakoak izan ezik">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Cookie berriak babestu">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Ez babestu cookie berririk">
 <!ENTITY torbutton.prefs.sec_caption "Segurtasun maila">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Segurtasun graduatzaileak nabigatzailearen ezaugarri batzuk ezgaitzea baimentzen dizu baina zure nabigatzailea ahulagoa izango da hackeatze saiakeren aurrean.">
 <!ENTITY torbutton.prefs.sec_standard_label "Estandarra">

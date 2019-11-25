@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Mạch nối Tor mới cho trang này">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Những cài đặt Mạng Tor...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Kiểm tra Bản cập nhật của trình duyệt Tor...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Những sự bảo vệ Cookie...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Bấm chuột để khởi chạy Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Những cài đặt bảo mật cho trình duyệt Tor">
-<!ENTITY torbutton.cookiedialog.title "Manage Cookie Protections">
-<!ENTITY torbutton.cookiedialog.lockCol "Protected">
-<!ENTITY torbutton.cookiedialog.domainCol "Host">
-<!ENTITY torbutton.cookiedialog.nameCol "Name">
-<!ENTITY torbutton.cookiedialog.pathCol "Path">
-<!ENTITY torbutton.cookiedialog.protectCookie "Protect Cookie">
-<!ENTITY torbutton.cookiedialog.removeCookie "Remove Cookie">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Unprotect Cookie">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Remove All But Protected">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Protect New Cookies">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Do Not Protect New Cookies">
 <!ENTITY torbutton.prefs.sec_caption "Mức độ Bảo mật">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Những Người điều chỉnh an ninh để cho bạn vô hiệu một vài tính năng của trình duyệt mà có thể làm trình duyệt của bạn dễ bị tổn thương đổi với những cố gắng tấn công.">
 <!ENTITY torbutton.prefs.sec_standard_label "Chuẩn">

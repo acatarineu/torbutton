@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "d">
 <!ENTITY torbutton.context_menu.new_circuit "Nieuw Tor-circuit voor deze website">
 <!ENTITY torbutton.context_menu.new_circuit_key "c">
-<!ENTITY torbutton.context_menu.networksettings "Tor-netwerkinstellingen…">
-<!ENTITY torbutton.context_menu.networksettings.key "n">
-<!ENTITY torbutton.context_menu.downloadUpdate "Controleren op Tor Browser-update…">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "u">
-<!ENTITY torbutton.context_menu.cookieProtections "Cookiebeschermingen…">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Klik om Torbutton te initialiseren">
 <!ENTITY torbutton.prefs.security_settings "Tor Browser-beveiligingsinstellingen">
-<!ENTITY torbutton.cookiedialog.title "Cookiebeschermingen beheren">
-<!ENTITY torbutton.cookiedialog.lockCol "Beschermd">
-<!ENTITY torbutton.cookiedialog.domainCol "Host">
-<!ENTITY torbutton.cookiedialog.nameCol "Naam">
-<!ENTITY torbutton.cookiedialog.pathCol "Pad">
-<!ENTITY torbutton.cookiedialog.protectCookie "Cookie beschermen">
-<!ENTITY torbutton.cookiedialog.removeCookie "Cookie verwijderen">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Cookiebescherming opheffen">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Alle behalve beschermde verwijderen">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Nieuwe cookies beschermen">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Nieuwe cookies niet beschermen">
 <!ENTITY torbutton.prefs.sec_caption "Beveiligingsniveau">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Via de beveiligingsschuifbalk kunt u bepaalde browserfuncties uitschakelen die uw browser kwetsbaarder maken voor hackpogingen.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standaard">

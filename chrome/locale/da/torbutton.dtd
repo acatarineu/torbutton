@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Nyt Tor-kredsløb for dette sted">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Tor-netværksindstillinger...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Søg efter opdateringer til Tor Browser...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "O">
-<!ENTITY torbutton.context_menu.cookieProtections "Cookie-beskyttelser...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Klik for at starte Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Tor Browser-sikkerhedsindstillinger">
-<!ENTITY torbutton.cookiedialog.title "Håndtér Cookie-beskyttelser">
-<!ENTITY torbutton.cookiedialog.lockCol "Beskyttet">
-<!ENTITY torbutton.cookiedialog.domainCol "Vært">
-<!ENTITY torbutton.cookiedialog.nameCol "Navn">
-<!ENTITY torbutton.cookiedialog.pathCol "Sti">
-<!ENTITY torbutton.cookiedialog.protectCookie "Beskyt cookie">
-<!ENTITY torbutton.cookiedialog.removeCookie "Fjern cookie">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Fjern beskyttelse af cookie">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Fjern alle pånær beskyttede">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Beskyt nye cookies">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Beskyt ikke nye cookies">
 <!ENTITY torbutton.prefs.sec_caption "Sikkerhedsniveau">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Sikkerhedsskyderen giver dig mulighed for at deaktivere bestemte browserfunktionaliteter som kan gøre din browser sårbar overfor forsøg på hacking.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standard">

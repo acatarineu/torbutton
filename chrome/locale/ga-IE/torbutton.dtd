@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Ciorcad Nua Tor don Suíomh seo">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Socruithe Líonra Tor...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Lorg Nuashonrú ar Bhrabhsálaí Tor...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Caomhnú Fianán...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Cliceáil chun cnaipe Tor a thúsú">
 <!ENTITY torbutton.prefs.security_settings "Socruithe Slándála Bhrabhsálaí Tor">
-<!ENTITY torbutton.cookiedialog.title "Bainistigh Caomhnú Fianán">
-<!ENTITY torbutton.cookiedialog.lockCol "Cosanta">
-<!ENTITY torbutton.cookiedialog.domainCol "Óstríomhaire">
-<!ENTITY torbutton.cookiedialog.nameCol "Ainm">
-<!ENTITY torbutton.cookiedialog.pathCol "Cosán">
-<!ENTITY torbutton.cookiedialog.protectCookie "Caomhnaigh an Fianán">
-<!ENTITY torbutton.cookiedialog.removeCookie "Scrios an Fianán">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Ná caomhnaigh an fianán">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Scrios iad nach bhfuil caomhnaithe">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Caomhnaigh Fianáin Nua">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Ná Caomhnaigh Fianáin Nua">
 <!ENTITY torbutton.prefs.sec_caption "Leibhéal Slándála">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Ligeann an Sleamhnán Slándála duit gnéithe áirithe sa bhrabhsálaí a dhíchumasú nuair is féidir le bradaí iad a úsáid chun ionsaí a dhéanamh ort.">
 <!ENTITY torbutton.prefs.sec_standard_label "Gnáthshlándáil">

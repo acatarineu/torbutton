@@ -1,20 +1,3 @@
 <!ENTITY torbutton.context_menu.new_identity "Uusi identiteetti">
 <!ENTITY torbutton.context_menu.new_identity_key "I">
-<!ENTITY torbutton.context_menu.networksettings "Open Network Settings…">
-<!ENTITY torbutton.context_menu.downloadUpdate "Lataa Tor Browser Bundle -päivitys...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "L">
-<!ENTITY torbutton.context_menu.cookieProtections "Evästeiden suojaukset">
-<!ENTITY torbutton.context_menu.cookieProtections.key "E">
-<!ENTITY torbutton.button.tooltip "Klikkaa Torbutton aktiiviseksi">
-<!ENTITY torbutton.cookiedialog.title "Hallitse evästeiden suojauksia">
-<!ENTITY torbutton.cookiedialog.lockCol "Suojaus">
-<!ENTITY torbutton.cookiedialog.domainCol "Palvelin">
-<!ENTITY torbutton.cookiedialog.nameCol "Nimi">
-<!ENTITY torbutton.cookiedialog.pathCol "Polku">
-<!ENTITY torbutton.cookiedialog.protectCookie "Suojaa eväste">
-<!ENTITY torbutton.cookiedialog.removeCookie "Poista eväste">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Poista evästeen suojaus">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Poista kaikki paitsi suojatut">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Suojaa uudet evästeet">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Älä suojaa uusia evästeitä">
 <!ENTITY torbutton.prefs.sec_restore_defaults "Palauta Oletukset">
