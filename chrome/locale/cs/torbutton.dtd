@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "i">
 <!ENTITY torbutton.context_menu.new_circuit "Nový řetězec sítí Tor k této stránce">
 <!ENTITY torbutton.context_menu.new_circuit_key "o">
-<!ENTITY torbutton.context_menu.networksettings "Nastavení sítě Tor...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Vyhledat aktualizace prohlížeče Tor…">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "a">
-<!ENTITY torbutton.context_menu.cookieProtections "Ochrany cookies…">
-<!ENTITY torbutton.context_menu.cookieProtections.key "c">
-<!ENTITY torbutton.button.tooltip "Klepněte pro inicializaci Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Nastavení zabezpečení prohlížeče Tor">
-<!ENTITY torbutton.cookiedialog.title "Správa ochrany cookies">
-<!ENTITY torbutton.cookiedialog.lockCol "Chráněné">
-<!ENTITY torbutton.cookiedialog.domainCol "Server">
-<!ENTITY torbutton.cookiedialog.nameCol "Název">
-<!ENTITY torbutton.cookiedialog.pathCol "Cesta">
-<!ENTITY torbutton.cookiedialog.protectCookie "Chránit cookies">
-<!ENTITY torbutton.cookiedialog.removeCookie "Odstranit cookies">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Přestat chránit cookies">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Odstranit všechny nechráněné">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Chránit nové cookies">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Přestat chránit nové cookies">
 <!ENTITY torbutton.prefs.sec_caption "Úroveň zabezpečení">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Úrovně zabezpečení vám umožňují vypnout některé funkce, kvůli kterým může být váš prohlížeč více náchylný k hackerským útokům.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standardní">

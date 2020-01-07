@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Ný Tor-rás fyrir þetta vefsvæði">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Netkerfisstillingar Tor…">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Athugaðu með uppfærslur Tor-vafra...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Varnir gegn vefkökum...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Smelltu til að kveikja á Tor-hnapp">
 <!ENTITY torbutton.prefs.security_settings "Öryggisstillingar Tor-vafrans">
-<!ENTITY torbutton.cookiedialog.title "Sýsla með varnir gegn vefkökum">
-<!ENTITY torbutton.cookiedialog.lockCol "Varið">
-<!ENTITY torbutton.cookiedialog.domainCol "Hýsilvél">
-<!ENTITY torbutton.cookiedialog.nameCol "Heiti">
-<!ENTITY torbutton.cookiedialog.pathCol "Slóð">
-<!ENTITY torbutton.cookiedialog.protectCookie "Vernda vefköku">
-<!ENTITY torbutton.cookiedialog.removeCookie "Fjarlægja vefköku">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Afvernda vefköku">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Fjarlægja allar aðrar en verndaðar">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Vernda nýjar vefkökur">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Ekki vernda nýjar vefkökur">
 <!ENTITY torbutton.prefs.sec_caption "Öryggisstig">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Öryggisstillingasleðinn getur gert óvirka ýmsa þá eiginleika vafrans sem gætu gert vafrann viðkvæmari fyrir árásum hakkara.">
 <!ENTITY torbutton.prefs.sec_standard_label "Staðlað">

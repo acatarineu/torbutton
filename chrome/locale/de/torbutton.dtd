@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Neuer Kanal für diese Seite">
 <!ENTITY torbutton.context_menu.new_circuit_key "K">
-<!ENTITY torbutton.context_menu.networksettings "Tor-Netzwerk-Einstellungen …">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Auf Tor-Browser-Aktualisierungen prüfen …">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "A">
-<!ENTITY torbutton.context_menu.cookieProtections "Cookie-Schutz …">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Klicken, um Torbutton zu aktivieren">
 <!ENTITY torbutton.prefs.security_settings "Tor-Browser-Sicherheitseinstellungen">
-<!ENTITY torbutton.cookiedialog.title "Cookie-Schutz verwalten">
-<!ENTITY torbutton.cookiedialog.lockCol "Geschützt">
-<!ENTITY torbutton.cookiedialog.domainCol "Rechner">
-<!ENTITY torbutton.cookiedialog.nameCol "Name">
-<!ENTITY torbutton.cookiedialog.pathCol "Pfad">
-<!ENTITY torbutton.cookiedialog.protectCookie "Cookie schützen">
-<!ENTITY torbutton.cookiedialog.removeCookie "Cookie entfernen">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Cookie nicht schützen">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Alle außer den geschützten Cookies entfernen">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Neue Cookies schützen">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Neue Cookies nicht schützen">
 <!ENTITY torbutton.prefs.sec_caption "Sicherheitsstufe">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Mit dem Sicherheitsschieberegler kannst du bestimmte Browserfunktionen, die deinen Browser für mögliche Attacken anfälliger machen, deaktivieren.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standard">

@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "วงจร Tor ใหม่สำหรับไซต์นี้">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "ตั้งค่าเครือข่าย Tor">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "ตรวจสอบสถานะการปรับรุ่น Tor Browser">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "การป้องกันคุกกี้">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "คลิกเพื่อเริ่มใช้ Torbutton">
 <!ENTITY torbutton.prefs.security_settings "ตั้งค่าความปลอดภัย Tor Browser">
-<!ENTITY torbutton.cookiedialog.title "จัดการป้องกัน Cookie">
-<!ENTITY torbutton.cookiedialog.lockCol "ถูกป้องกันอยู่">
-<!ENTITY torbutton.cookiedialog.domainCol "โฮสต์">
-<!ENTITY torbutton.cookiedialog.nameCol "ชื่อ">
-<!ENTITY torbutton.cookiedialog.pathCol "เส้นทาง">
-<!ENTITY torbutton.cookiedialog.protectCookie "การป้องกันคุกกี้">
-<!ENTITY torbutton.cookiedialog.removeCookie "นำคุกกี้ออก">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "คุกกี้ที่ไม่ถูกป้องกัน">
-<!ENTITY torbutton.cookiedialog.removeAllBut "ลบทั้งหมดแต่ป้องกันเอาไว้">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "ป้องกันคุกกี้ใหม่">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "ไม่ต้องป้องกันคุกกี้ใหม่">
 <!ENTITY torbutton.prefs.sec_caption "ระดับความปลอดภัย">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "สไลเดอร์สำหรับความปลอดภัยทำให้คุณปิดคุณสมบัติบางส่วนของเบราว์เซอร์ที่ทำให้บราวเซอร์ของคุณเสี่ยงต่อความพยายามที่จะแฮ็ค">
 <!ENTITY torbutton.prefs.sec_standard_label "มาตรฐาน">

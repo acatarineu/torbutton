@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "ვ">
 <!ENTITY torbutton.context_menu.new_circuit "ახალი Tor-წრედი ამ საიტისთვის">
 <!ENTITY torbutton.context_menu.new_circuit_key "წ">
-<!ENTITY torbutton.context_menu.networksettings "Tor-ქსელის პარამეტრები...">
-<!ENTITY torbutton.context_menu.networksettings.key "ქ">
-<!ENTITY torbutton.context_menu.downloadUpdate "Tor-ბრაუზერის განახლებებზე შემოწმება...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "გ">
-<!ENTITY torbutton.context_menu.cookieProtections "ფუნთუშების დაცვა...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "ფ">
-<!ENTITY torbutton.button.tooltip "დააწკაპეთ Torbutton-ის გასაშვებად">
 <!ENTITY torbutton.prefs.security_settings "Tor-ბრაუზერის უსაფრთხოების პარამეტრები">
-<!ENTITY torbutton.cookiedialog.title "ფუნთუშების უსაფრთხოების მართვა">
-<!ENTITY torbutton.cookiedialog.lockCol "დაცულია">
-<!ENTITY torbutton.cookiedialog.domainCol "მისამართი">
-<!ENTITY torbutton.cookiedialog.nameCol "სახელი">
-<!ENTITY torbutton.cookiedialog.pathCol "მდებარეობა">
-<!ENTITY torbutton.cookiedialog.protectCookie "ფუნთუშის დაცვა">
-<!ENTITY torbutton.cookiedialog.removeCookie "ფუნთუშის მოცილება">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "ფუნთუშის დაცვის მოხსნა">
-<!ENTITY torbutton.cookiedialog.removeAllBut "ყველას მოცილება დაცულების გარდა">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "ახალი ფუნთუშების დაცვა">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "ახალი ფუნთუშების დაცვის შეჩერება">
 <!ENTITY torbutton.prefs.sec_caption "უსაფრთხოების დონე">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "უსაფრთხოების ასარჩევი რბია, საშუალებას გაძლევთ გათიშოთ ბრაუზერის შესაძლებლობების ნაწილი, უნებართვო შეღწევის მცდელობებისგან უკეთ თავდასაცავად.">
 <!ENTITY torbutton.prefs.sec_standard_label "ჩვეულებრივი">

@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Ny Tor-krets for denne siden">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Nettverksinnstillinger for Tor…">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Se etter oppdatering for Tor-nettleseren…">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Informasjonskapsels-beskyttelse…">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Klikk for å igangsette Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Sikkerhetsinnstillinger for Tor-nettleseren">
-<!ENTITY torbutton.cookiedialog.title "Administrer beskyttelse av informasjonskapsler">
-<!ENTITY torbutton.cookiedialog.lockCol "Beskyttet">
-<!ENTITY torbutton.cookiedialog.domainCol "Vert">
-<!ENTITY torbutton.cookiedialog.nameCol "Navn">
-<!ENTITY torbutton.cookiedialog.pathCol "Rute">
-<!ENTITY torbutton.cookiedialog.protectCookie "Beskytt Informasjonskapsel">
-<!ENTITY torbutton.cookiedialog.removeCookie "Fjern Informasjonskapsel">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Ikke Beskytt Informasjonskapsel">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Fjern alle bortsett fra beskyttede">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Beskytt nye informasjonskapsler">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Ikke beskytt nye informasjonskapsler">
 <!ENTITY torbutton.prefs.sec_caption "Sikkerhetsnivå">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Sikkerhetsglidebryteren lar deg skru av forskjellige nettleserfunksjoner som kan eksponere deg for risiko.">
 <!ENTITY torbutton.prefs.sec_standard_label "Forvalg">

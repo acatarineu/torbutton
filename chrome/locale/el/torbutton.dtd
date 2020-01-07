@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Νέο κύκλωμα Tor για αυτήν την ιστοσελίδα">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Ρυθμίσεις του Δικτύου Tor...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Έλεγχος για ενημέρωση του Tor Browser...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Προστασία Cookies...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Κάντε κλικ για να εκκινήσετε το Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Ρυθμίσεις ασφαλείας του Tor Browser">
-<!ENTITY torbutton.cookiedialog.title "Διαχείριση Προστασίας Cookie">
-<!ENTITY torbutton.cookiedialog.lockCol "Προστατευμένα">
-<!ENTITY torbutton.cookiedialog.domainCol "Οικοδεσπότης">
-<!ENTITY torbutton.cookiedialog.nameCol "Όνομα">
-<!ENTITY torbutton.cookiedialog.pathCol "Μονοπάτι">
-<!ENTITY torbutton.cookiedialog.protectCookie "Προστασία cookie">
-<!ENTITY torbutton.cookiedialog.removeCookie "Αφαίρεση Cookie">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Άρση προστασίας cookie">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Αφαίρεση όλων εκτός των προστατευμένων">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Προστασία νέων cookie">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Να Μη γίνεται Προστασία Νέων Cookie">
 <!ENTITY torbutton.prefs.sec_caption "Επίπεδο ασφάλειας">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Το Slider Ασφάλειας σας αφήνει να απενεργοποιήσετε ορισμένα χαρακτηριστικά του φυλλομετρητή που μπορεί να τον κάνουν πιο ευάλωτο σε προσπάθειες hacking.">
 <!ENTITY torbutton.prefs.sec_standard_label "Βασικό">

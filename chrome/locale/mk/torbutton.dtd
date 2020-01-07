@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Нов Tor круг за оваа страна">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Тор мрежни поставки...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Провери за нова верзија на Tor Browser...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Заштита за колаче...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Кликнете за иницијализирање на Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Tor Browser безбедносни поставки">
-<!ENTITY torbutton.cookiedialog.title "Уреди ги заштитите за колаче">
-<!ENTITY torbutton.cookiedialog.lockCol "Заштитено">
-<!ENTITY torbutton.cookiedialog.domainCol "Хост">
-<!ENTITY torbutton.cookiedialog.nameCol "Име">
-<!ENTITY torbutton.cookiedialog.pathCol "Патека">
-<!ENTITY torbutton.cookiedialog.protectCookie "Заштити колаче">
-<!ENTITY torbutton.cookiedialog.removeCookie "Избриши колаче">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Отстрани заштита на колаче">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Избриши ги сите освен заштитените">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Заштити ги новите колачиња">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Не ги штити новите колачиња">
 <!ENTITY torbutton.prefs.sec_caption "Безбедносно ниво">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Безбедносниот лизгач ви овозможува да исклучите дадени прелистувачки можности кои можат да го направат вашиот прелистувач поранлив на хакерски напади.">
 <!ENTITY torbutton.prefs.sec_standard_label "Стандардно">

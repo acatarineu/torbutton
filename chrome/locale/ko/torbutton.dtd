@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "이 사이트에서의 새 Tor 서킷">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Tor 네트워크 설정...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "토르 브라우저 업데이트 체크하기...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "쿠키 보호...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "클릭하여 Torbutton 설정 초기하기">
 <!ENTITY torbutton.prefs.security_settings "Tor 브라우저 보안 설정">
-<!ENTITY torbutton.cookiedialog.title "쿠키 보호 관리">
-<!ENTITY torbutton.cookiedialog.lockCol "보호됨">
-<!ENTITY torbutton.cookiedialog.domainCol "호스트">
-<!ENTITY torbutton.cookiedialog.nameCol "이름">
-<!ENTITY torbutton.cookiedialog.pathCol "경로">
-<!ENTITY torbutton.cookiedialog.protectCookie "쿠키 보호">
-<!ENTITY torbutton.cookiedialog.removeCookie "쿠키 삭제">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "쿠키 보호하지 않음">
-<!ENTITY torbutton.cookiedialog.removeAllBut "보호된 것 빼고 모두 지우기">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "새로운 쿠키 보호">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "새로운 쿠키를 보호하지 않음">
 <!ENTITY torbutton.prefs.sec_caption "보안 등급">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "보안 슬라이더를 사용하면 특정 브라우저 기능이 비활성화되어 브라우저가 해킹 시도에 취약해질 수 있습니다.">
 <!ENTITY torbutton.prefs.sec_standard_label "표준">

@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "Nuevo Circuito Tor para este Sitio">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Configuraciones de la Red de Tor">
-<!ENTITY torbutton.context_menu.networksettings.key "R">
-<!ENTITY torbutton.context_menu.downloadUpdate "Comprobar si hay Actualización para el Navegador Tor">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "A">
-<!ENTITY torbutton.context_menu.cookieProtections "Protecciones de CooKies">
-<!ENTITY torbutton.context_menu.cookieProtections.key "K">
-<!ENTITY torbutton.button.tooltip "Cliqueá para inicializar Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Configuración de Seguridad del Navegador Tor">
-<!ENTITY torbutton.cookiedialog.title "Manejar la Protección de cookies">
-<!ENTITY torbutton.cookiedialog.lockCol "Protegido">
-<!ENTITY torbutton.cookiedialog.domainCol "Host">
-<!ENTITY torbutton.cookiedialog.nameCol "Nombre">
-<!ENTITY torbutton.cookiedialog.pathCol "Ruta">
-<!ENTITY torbutton.cookiedialog.protectCookie "Proteger Cookie">
-<!ENTITY torbutton.cookiedialog.removeCookie "Eliminar Cookie">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Desproteger Cookie">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Eliminar todas salvo las protegidas ">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Proteger nuevas Cookies">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "No proteger nuevas Cookies">
 <!ENTITY torbutton.prefs.sec_caption "Nivel de seguridad">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "La regla deslizante de Seguridad te deja deshabilitar ciertas características del navegador que pueden hacerlo más vulnerable a intentos de apropiación.">
 <!ENTITY torbutton.prefs.sec_standard_label "Estándar">

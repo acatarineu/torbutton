@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "o">
 <!ENTITY torbutton.context_menu.new_circuit "Nowy obwód dla tej strony">
 <!ENTITY torbutton.context_menu.new_circuit_key "c">
-<!ENTITY torbutton.context_menu.networksettings "Ustawienia Sieci Tor...">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Sprawdź czy są aktualizacje Tor Browser...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "u">
-<!ENTITY torbutton.context_menu.cookieProtections "Ochrona plików cookie...">
-<!ENTITY torbutton.context_menu.cookieProtections.key "c">
-<!ENTITY torbutton.button.tooltip "Kliknij tutaj, aby uruchomić Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Ustawienia Bezpieczeństwa Przeglądarki Tor">
-<!ENTITY torbutton.cookiedialog.title "Zarządzaj ochroną ciasteczek">
-<!ENTITY torbutton.cookiedialog.lockCol "Chronione">
-<!ENTITY torbutton.cookiedialog.domainCol "Host">
-<!ENTITY torbutton.cookiedialog.nameCol "Nazwa">
-<!ENTITY torbutton.cookiedialog.pathCol "Ścieżka">
-<!ENTITY torbutton.cookiedialog.protectCookie "Chroń ciasteczko">
-<!ENTITY torbutton.cookiedialog.removeCookie "Usuń ciasteczko">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Nie chroń ciasteczka">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Usuń wszystkie oprócz chronionych">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Chroń nowe ciasteczka">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Nie chroń nowych ciasteczek">
 <!ENTITY torbutton.prefs.sec_caption "Poziom bezpieczeństwa">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Suwak poziomu bezpieczeństwa pozwala na wyłączenie pewnych funkcji przeglądarki, które mogą uczynić ten program bardziej narażonym na próby ataku hakerskiego.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standardowy">

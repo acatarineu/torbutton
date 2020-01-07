@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "I">
 <!ENTITY torbutton.context_menu.new_circuit "このサイトに新しい サーキットを使う">
 <!ENTITY torbutton.context_menu.new_circuit_key "C">
-<!ENTITY torbutton.context_menu.networksettings "Tor ネットワークの設定…">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Tor Browser の更新を確認...">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Cookie の防御">
-<!ENTITY torbutton.context_menu.cookieProtections.key "C">
-<!ENTITY torbutton.button.tooltip "Torbuttonを初期状態に戻す">
 <!ENTITY torbutton.prefs.security_settings "Tor Browser セキュリティの設定">
-<!ENTITY torbutton.cookiedialog.title "Cookie保護を管理">
-<!ENTITY torbutton.cookiedialog.lockCol "保護済み">
-<!ENTITY torbutton.cookiedialog.domainCol "ホスト">
-<!ENTITY torbutton.cookiedialog.nameCol "名前">
-<!ENTITY torbutton.cookiedialog.pathCol "パス">
-<!ENTITY torbutton.cookiedialog.protectCookie "Cookieを保護">
-<!ENTITY torbutton.cookiedialog.removeCookie "Cookieを削除">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Cookieの保護を解除">
-<!ENTITY torbutton.cookiedialog.removeAllBut "保護されているもの以外削除">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "新しいCookieを保護">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "新しいCookieを保護しない">
 <!ENTITY torbutton.prefs.sec_caption "セキュリティレベル">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "セキュリティ・スライダーを使って、あなたのブラウザーをハッキングの試みに対してより脆弱にする可能性のあるブラウザーの機能を無効にできます。">
 <!ENTITY torbutton.prefs.sec_standard_label "標準">

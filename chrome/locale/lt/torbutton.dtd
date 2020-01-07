@@ -2,25 +2,7 @@
 <!ENTITY torbutton.context_menu.new_identity_key "T">
 <!ENTITY torbutton.context_menu.new_circuit "Nauja Tor grandinė šiai svetainei">
 <!ENTITY torbutton.context_menu.new_circuit_key "G">
-<!ENTITY torbutton.context_menu.networksettings "Tor tinklo nustatymai…">
-<!ENTITY torbutton.context_menu.networksettings.key "N">
-<!ENTITY torbutton.context_menu.downloadUpdate "Tikrinti, ar yra Tor Naršyklės atnaujinimų…">
-<!ENTITY torbutton.context_menu.downloadUpdate.key "U">
-<!ENTITY torbutton.context_menu.cookieProtections "Slapukų apsaugos…">
-<!ENTITY torbutton.context_menu.cookieProtections.key "P">
-<!ENTITY torbutton.button.tooltip "Spustelėkite, kad aktyvuotumėte Torbutton">
 <!ENTITY torbutton.prefs.security_settings "Tor Naršyklės saugumo nustatymai">
-<!ENTITY torbutton.cookiedialog.title "Tvarkyti slapukų apsaugas">
-<!ENTITY torbutton.cookiedialog.lockCol "Apsaugotas">
-<!ENTITY torbutton.cookiedialog.domainCol "Serveris">
-<!ENTITY torbutton.cookiedialog.nameCol "Pavadinimas">
-<!ENTITY torbutton.cookiedialog.pathCol "Kelias">
-<!ENTITY torbutton.cookiedialog.protectCookie "Apsaugoti slapuką">
-<!ENTITY torbutton.cookiedialog.removeCookie "Šalinti slapuką">
-<!ENTITY torbutton.cookiedialog.unprotectCookie "Neapsaugoti slapuko">
-<!ENTITY torbutton.cookiedialog.removeAllBut "Šalinti visus, išskyrus apsaugotus">
-<!ENTITY torbutton.cookiedialog.saveAllCookies "Apsaugoti naujus slapukus">
-<!ENTITY torbutton.cookiedialog.doNotSaveAllCookies "Neapsaugoti naujų slapukų">
 <!ENTITY torbutton.prefs.sec_caption "Saugumo lygmuo">
 <!ENTITY torbutton.prefs.sec_caption_tooltip "Saugumo slankiklis leidžia jums išjungti tam tikras naršyklės ypatybes, kurios gali padaryti jūsų naršyklę labiau pažeidžiamą bandymams įsibrauti.">
 <!ENTITY torbutton.prefs.sec_standard_label "Standartinis">
