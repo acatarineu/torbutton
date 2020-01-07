@@ -507,7 +507,9 @@ var torbutton_new_identity;
     // in the event queue.
     var thread = Services.tm.currentThread;
     m_tb_domWindowUtils.suppressEventHandling(true);
-    while (thread.processNextEvent(false)) {}
+    while (thread.processNextEvent(false)) {
+      // wait
+    }
     m_tb_domWindowUtils.suppressEventHandling(false);
 
     try {
@@ -918,7 +920,7 @@ var torbutton_new_identity;
       );
       window.alert(warning);
     } else if (!torbutton_send_ctrl_cmd("SIGNAL NEWNYM\r\n")) {
-      var warning = torbutton_get_property_string("torbutton.popup.no_newnym");
+      let warning = torbutton_get_property_string("torbutton.popup.no_newnym");
       torbutton_log(
         5,
         "Torbutton was unable to request a new circuit from Tor"
@@ -1216,10 +1218,10 @@ var torbutton_new_identity;
 
   function torbutton_initiate_remote_tor_check() {
     let obsSvc = Services.obs;
+    let checkSvc = Cc["@torproject.org/torbutton-torCheckService;1"].getService(
+      Ci.nsISupports
+    ).wrappedJSObject;
     try {
-      let checkSvc = Cc[
-        "@torproject.org/torbutton-torCheckService;1"
-      ].getService(Ci.nsISupports).wrappedJSObject;
       let req = checkSvc.createCheckRequest(true); // async
       req.onreadystatechange = function(aEvent) {
         if (req.readyState === 4) {

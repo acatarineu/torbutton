@@ -212,7 +212,7 @@ var unescapeTorString = function(str) {
 var show_torbrowser_manual = () => {
   let availableLocales = ["de", "en", "es", "fr", "nl", "pt", "tr", "vi", "zh"];
   let shortLocale = getLocale().substring(0, 2);
-  return availableLocales.indexOf(shortLocale) >= 0;
+  return availableLocales.includes(shortLocale);
 };
 
 var getFPDFromHost = hostname => {

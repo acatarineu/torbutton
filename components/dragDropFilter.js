@@ -56,6 +56,7 @@ DragDropFilter.prototype = {
       this.logger.log(3, "The DataTransfer is available");
       return this.filterDataTransferURLs(subject);
     }
+    return undefined;
   },
 
   filterDataTransferURLs(aDataTransfer) {

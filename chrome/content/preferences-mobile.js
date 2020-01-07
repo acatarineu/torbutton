@@ -16,17 +16,17 @@ let { getLocale, show_torbrowser_manual } = ChromeUtils.import(
 );
 
 // Description elements have the follow names.
-const descNames = [, "desc_standard", "desc_safer", "desc_safest"];
+const descNames = [undefined, "desc_standard", "desc_safer", "desc_safest"];
 // "Learn-more"-elements have the follow names.
-const linkNames = [, "link_standard", "link_safer", "link_safest"];
+const linkNames = [undefined, "link_standard", "link_safer", "link_safest"];
 // A single `state` object that reflects the user settings in this UI.
 
 let state = { slider: 0, custom: false };
 
 // Utility functions to convert between the legacy 4-value pref index
 // and the 3-valued security slider.
-let sliderPositionToPrefSetting = pos => [, 4, 2, 1][pos];
-let prefSettingToSliderPosition = pref => [, 3, 2, 2, 1][pref];
+let sliderPositionToPrefSetting = pos => [undefined, 4, 2, 1][pos];
+let prefSettingToSliderPosition = pref => [undefined, 3, 2, 2, 1][pref];
 
 // Set the desired slider value and update UI.
 function torbutton_set_slider(sliderValue) {

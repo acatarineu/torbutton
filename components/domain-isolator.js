@@ -170,6 +170,7 @@ tor.isolateCircuitsByDomain = function() {
     } catch (e) {
       logger.eclog(4, `tor domain isolator error: ${e.message}`);
     }
+    return undefined;
   }, 0);
 };
 

@@ -68,7 +68,6 @@ TBTorCheckService.prototype = {
   },
 
   createCheckRequest(aAsync) {
-    Cu.importGlobalProperties(["XMLHttpRequest"]);
     let req = new XMLHttpRequest();
     let url = Services.prefs.getCharPref("extensions.torbutton.test_url");
     req.open("GET", url, aAsync);

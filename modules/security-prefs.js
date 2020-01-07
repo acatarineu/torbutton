@@ -29,19 +29,21 @@ let log = (level, msg) => logger.log(level, msg);
 // corresponding to the old 2-medium-high setting. We also separately
 // bind NoScript settings to the extensions.torbutton.security_slider
 // (see noscript-control.js).
+/* eslint-disable */
 const kSecuritySettings = {
   // Preference name :                        [0, 1-high 2-m    3-m    4-low]
-  "javascript.options.ion": [, false, false, false, true],
-  "javascript.options.baselinejit": [, false, false, false, true],
-  "javascript.options.native_regexp": [, false, false, false, true],
-  "media.webaudio.enabled": [, false, false, false, true],
-  "mathml.disabled": [, true, true, true, false],
-  "gfx.font_rendering.graphite.enabled": [, false, false, false, true],
-  "gfx.font_rendering.opentype_svg.enabled": [, false, false, false, true],
-  "svg.disabled": [, true, false, false, false],
-  "javascript.options.asmjs": [, false, false, false, true],
-  "javascript.options.wasm": [, false, false, false, true],
+  "javascript.options.ion":                   [,  false, false, false, true ],
+  "javascript.options.baselinejit":           [,  false, false, false, true ],
+  "javascript.options.native_regexp":         [,  false, false, false, true ],
+  "media.webaudio.enabled":                   [,  false, false, false, true ],
+  "mathml.disabled":                          [,  true,  true,  true,  false],
+  "gfx.font_rendering.graphite.enabled":      [,  false, false, false, true ],
+  "gfx.font_rendering.opentype_svg.enabled":  [,  false, false, false, true ],
+  "svg.disabled":                             [,  true,  false, false, false],
+  "javascript.options.asmjs":                 [,  false, false, false, true ],
+  "javascript.options.wasm":                  [,  false, false, false, true ],
 };
+/* eslint-enable */
 
 // The Security Settings prefs in question.
 const kSliderPref = "extensions.torbutton.security_slider";

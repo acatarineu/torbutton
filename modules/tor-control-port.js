@@ -555,7 +555,7 @@ info.bridgeParser = function(bridgeLine) {
         "obfs4",
         "scramblesuit",
         "snowflake",
-      ].indexOf(result.type) >= 0
+      ].includes(result.type)
     ) {
       [result.address, result.ID] = tokens.slice(1);
     }

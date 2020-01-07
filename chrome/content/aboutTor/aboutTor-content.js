@@ -7,6 +7,8 @@
  * about:tor content script
  *************************************************************************/
 
+/* eslint-env mozilla/frame-script */
+
 /*
  * The following about:tor IPC messages are exchanged by this code and
  * the code in torbutton.js:
@@ -135,7 +137,7 @@ var AboutTorListener = {
       let elem = content.document.getElementById("torbrowser-version");
 
       while (elem.firstChild) {
-        elem.removeChild(elem.firstChild);
+        elem.firstChild.remove();
       }
       elem.appendChild(
         content.document.createTextNode(productName + " " + tbbVersion)
