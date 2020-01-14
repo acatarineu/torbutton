@@ -9,7 +9,7 @@ torbutton.jar:
  modules/       (modules/*)
  skin/          (chrome/skin/*)
 
-% resource torbutton %
+% resource torbutton % contentaccessible=yes
 % resource torbutton-assets resource://torbutton/skin/ contentaccessible=yes
 
 # browser branding
