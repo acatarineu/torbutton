@@ -308,12 +308,38 @@ let updateCircuitDisplay = function () {
          (i === 0 && nodeData[0].type !== "bridge") ?
            ["span", { class: "circuit-guard-info" }, uiString("guard")] : null);
     }
+
+    let domainParts = [];
     if (domain.endsWith(".onion")) {
       for (let i = 0; i < 3; ++i) {
         li(uiString("relay"));
       }
+      if (domain.length > 22) {
+        domainParts.push(domain.slice(0, 7), "…", domain.slice(-12));
+      } else {
+        domainParts.push(domain);
+      }
+    } else {
+      domainParts.push(domain);
     }
-    li(domain);
+
+    li([
+      "span",
+      {
+        class: "circuit-onion",
+        onclick: `
+          this.classList.add("circuit-onion-copied");
+          Cc[
+            "@mozilla.org/widget/clipboardhelper;1"
+          ].getService(Ci.nsIClipboardHelper).copyString(this.getAttribute("data-onion"))
+        `,
+        "data-onion": domain,
+        "data-text-clicktocopy": torbutton_get_property_string("torbutton.circuit_display.click_to_copy"),
+        "data-text-copied": torbutton_get_property_string("torbutton.circuit_display.copied"),
+      },
+      ...domainParts,
+    ]);
+
     // Hide the note about guards if we are using a bridge.
     document.getElementById("circuit-guard-note-container").style.display =
       (nodeData[0].type === "bridge") ? "none" : "block";
