@@ -9,4 +9,4 @@
 # remain unchanged across different versions (Nightly, Beta, etc.).
 -brand-product-name = متصفح تور
 -vendor-short-name = مشروع تور
-trademarkInfo = &quot;تور&quot; و &quot;شعار البصلة&quot; علامات تجارية مسجلة باسم شركة مشروع تور المحدودة
+trademarkInfo = 'تور' و 'شعار البصلة' علامات تجارية مسجلة باسم شركة مشروع تور المحدودة

@@ -9,4 +9,4 @@
 # remain unchanged across different versions (Nightly, Beta, etc.).
 -brand-product-name = Tor-nettleseren
 -vendor-short-name = Tor Project
-trademarkInfo = &quot;Tor&quot; og &quot;Løk-logoen&quot; er registrerte varemerker tilhørende the Tor Project, Inc.
+trademarkInfo = 'Tor' og 'Løk-logoen' er registrerte varemerker tilhørende the Tor Project, Inc.
